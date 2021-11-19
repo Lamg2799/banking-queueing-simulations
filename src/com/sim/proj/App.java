@@ -60,9 +60,9 @@ class App {
             // multiQueueResults.add(sim); not done yet
         }
 
-        // printing results
-        printMultiServerResults();
-        printMultiQueueResults();
+        // printMultiServerResults();
+        // printMultiQueueResults();
+
         // finding optimal parameters based on maxQueueSize
         computeMultiserverOptimal();
         computeMultiqueueOptimal();
