@@ -1,5 +1,8 @@
 package com.sim.proj;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 /**
  * Main class for a Java implementation of the Multi server problem as a
  * practice for the CSI4124 Simulation and modelisation Created by:
@@ -10,7 +13,10 @@ package com.sim.proj;
 class App {
 
     private Multiserver multiserver = null;
-    private Output output = null;
+    
+
+    private ArrayList<HashMap<String, Double>> multiServerResults;
+    private ArrayList<HashMap<String, Double>> multiQueueResults;
 
     /**
      * Main static function
@@ -30,11 +36,15 @@ class App {
 
         new App(args);
 
+
     }
 
     private App(String[] args) {
 
-        output = Output.getOutputInstance();
+
+        multiQueueResults = new ArrayList<HashMap<String, Double>>(4);
+        multiServerResults = new ArrayList<HashMap<String, Double>>(4);
+     
         multiserver = new Multiserver(args);
         runSims();
     }
@@ -43,14 +53,35 @@ class App {
 
 
 
-        multiserver.runSim();
-        output.printMultiServerResults();
+        multiServerResults.add(multiserver.runSim());
+
+     printMultiServerResults();
 
     }
 
-    /**
-     * Constructor
-     */
+    private void printMultiServerResults() {
+        System.out.println("Printing multiserver results...");
+        for (HashMap<String, Double> hashMap : multiServerResults) {
+            System.out.println();
+
+            for (String s : hashMap.keySet()) {
+                System.out.println(s + ": " + hashMap.get(s));
+            }
+        }
+
+    }
+
+    private void printMultiQueueResults() {
+        System.out.println("Printing multiqueue results...");
+        for (HashMap<String, Double> hashMap : multiQueueResults) {
+            System.out.println();
+
+            for (String s : hashMap.keySet()) {
+                System.out.println(s + ": " + hashMap.get(s));
+            }
+        }
+        System.out.println();
+    }
 
 }
 

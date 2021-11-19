@@ -98,9 +98,8 @@ public class Multiserver {
      * Stores the start time clock to compute execution time in millis
      */
     private long startTime = 0;
-    private double maxClock = 0;
-    private Output output = null;
-    private HashMap<String, Double> results = null;
+    private double maxClock = 0;  
+   
     private double meanDivider=1.0;
 
     public Multiserver(String[] args) {
@@ -121,7 +120,7 @@ public class Multiserver {
     /**
      * Run simulation method
      */
-    public void runSim() {
+    public HashMap<String, Double> runSim() {
         // retrieve config and create customers
         initialize();
 
@@ -164,9 +163,10 @@ public class Multiserver {
         }
 
         System.out.println("Simulation done... Generating report");
-        storeResults();
+        
         // Generate the outputs
         generateReport();
+        return storeResults();
     }
 
     /**
@@ -176,8 +176,8 @@ public class Multiserver {
     private void initialize() {
         System.out.print("Initializing... ");
 
-        output = Output.getOutputInstance();
-        results = new HashMap<String, Double>();
+        
+       
         rdmS = new Random();
         totalServerTime = new double[numServer];
         serverStatus = new State[numServer];
@@ -355,8 +355,8 @@ public class Multiserver {
         Collections.sort(eventList, compareByTime);
     }
 
-    private void storeResults() {
-
+    private HashMap<String, Double> storeResults() {
+       var results = new HashMap<String, Double>();
         double servers = (double) numServer;
         double numcust = (double) customers.size();
         double maxloop = (double) numMaxLoop;
@@ -383,9 +383,9 @@ public class Multiserver {
             results.put(key + "%", value);
 
         }
-
+return results;
         // adds the results to output class so its available for comparing
-        output.addMultiServerResult(results);
+      
     }
 
     /**
