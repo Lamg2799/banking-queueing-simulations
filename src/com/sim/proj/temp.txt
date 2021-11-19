@@ -1,0 +1,52 @@
+input: 
+
+java -jar multiserver.jar 1000 1000 50 40 240 80 5
+
+output:
+
+Total execution Time (millis): 13219
+Num loop done: 1000
+Final clock (sec): 54320.44
+Total Waiting Time (sec): 35.66; avg (sec): 0.04; Max waiting time (sec): 263.23
+Total System Time (sec): 240104.58; avg (sec): 240.10
+Total time Server #: 0 was Busy (sec): 38700.07; (%):  71.24
+Total time Server #: 1 was Busy (sec): 37394.20; (%):  68.84
+Total time Server #: 2 was Busy (sec): 33617.23; (%):  61.89
+Total time Server #: 3 was Busy (sec): 22294.86; (%):  41.04
+Total time Server #: 4 was Busy (sec): 4366.89; (%):  8.04
+Max customers waiting in line: 7
+
+
+input: 
+
+java -jar multiserver.jar 1000 1000 50 40 240 80 4
+
+output:
+
+Total execution Time (millis): 12923
+Num loop done: 1000
+Final clock (sec): 54841.66
+Total Waiting Time (sec): 185925.24; avg (sec): 185.93; Max waiting time (sec): 8437.74
+Total System Time (sec): 453330.87; avg (sec): 453.33
+Total time Server #: 0 was Busy (sec): 44297.87; (%):  80.77
+Total time Server #: 1 was Busy (sec): 40613.28; (%):  74.06
+Total time Server #: 2 was Busy (sec): 33482.99; (%):  61.05
+Total time Server #: 3 was Busy (sec): 12491.15; (%):  22.78
+Max customers waiting in line: 136
+
+
+input: 
+
+java -jar multiserver.jar 1000 1000 50 40 240 80 3
+
+output:
+
+Total execution Time (millis): 11540
+Num loop done: 1000
+Final clock (sec): 67322.89
+Total Waiting Time (sec): 5684827.21; avg (sec): 5684.83; Max waiting time (sec): 29519.52
+Total System Time (sec): 5945174.43; avg (sec): 5945.17
+Total time Server #: 0 was Busy (sec): 83650.58; (%):  124.25
+Total time Server #: 1 was Busy (sec): 68265.24; (%):  101.40
+Total time Server #: 2 was Busy (sec): 59770.35; (%):  88.78
+Max customers waiting in line: 368
