@@ -102,16 +102,8 @@ public class Multiserver {
    
     private double meanDivider=1.0;
 
-    public Multiserver(String[] args) {
-        numMaxLoop = Integer.parseInt(args[0]);
-        // retrieve config file
-
-        // initalize parameters variables
-        maxClock = Double.parseDouble(args[1]);
-        meanS = Integer.parseInt(args[2]);
-        sigmaS = Integer.parseInt(args[3]);
-        numServer = Integer.parseInt(args[4]);
-        meanDivider = Double.parseDouble(args[5]);
+    public Multiserver() {
+       
 
        
 
@@ -120,9 +112,9 @@ public class Multiserver {
     /**
      * Run simulation method
      */
-    public HashMap<String, Double> runSim() {
+    public HashMap<String, Double> runSim(String[]args) {
         // retrieve config and create customers
-        initialize();
+        initialize(args);
 
         // start running time clock
         startTime = System.currentTimeMillis();
@@ -173,10 +165,17 @@ public class Multiserver {
      * Retrieves the configs and create a list of customer before starting the first
      * simulation
      */
-    private void initialize() {
+    private void initialize(String []args) {
         System.out.print("Initializing... ");
 
-        
+        // initalize parameters variables
+        numMaxLoop = Integer.parseInt(args[0]);  
+        maxClock = Double.parseDouble(args[1]);
+        meanS = Integer.parseInt(args[2]);
+        sigmaS = Integer.parseInt(args[3]);
+        numServer = Integer.parseInt(args[4]);
+        meanDivider = Double.parseDouble(args[5]);
+
        
         rdmS = new Random();
         totalServerTime = new double[numServer];
@@ -184,6 +183,7 @@ public class Multiserver {
         customersQ = new CustomerQueue();
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
+        
         System.out.println("Initializing done");
     }
 
@@ -193,7 +193,7 @@ public class Multiserver {
     private void reInitialize() {
         clock = 0;
         // reinitializing variables
-
+       
         for (int i = 0; i < serverStatus.length; i++) {
 
             serverStatus[i] = State.IDLE;
@@ -201,32 +201,39 @@ public class Multiserver {
 
         double nextIA = 0;
         double currentIA = 0;
-
+       
         // generating InterArrival Events depending on customers number
-        for (int i = 0; i < maxClock;) {
+        for (int i = 0; currentIA < maxClock;i++) {
             // generate next random value based on normal distribution with the required
             // mean and sigma
 
             // nextIA = Math.abs(rdmIA.nextGaussian() * sigmaIA + meanIA);
-            nextIA = generateNextIA(i);
+           
+            nextIA = generateNextIA(currentIA);
             currentIA += nextIA;
-            var c = new Customer();
+            Customer c;
+            if(currentLoop<=1||i>=customers.size()){
+            c = new Customer();
             customers.add(c);
+            }else{
+
+                 c = customers.get(i);
+            }
             // creates arrival event
             eventList.add(new Event(EventType.ARRIVAL, currentIA, c));
-            i = i + (int) nextIA;
+           
         }
         // sort event list
         sort();
     }
 
-    private double generateNextIA(int x) {
+    private double generateNextIA(double time) {
 
-        var mean = (double) (Math.pow(x, 2) * 0.000003657) - (0.1262 * x) + 1200;
+        var mean =  (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
 
         // System.out.println("Poisson Distribution");
 
-        var pd = new PoissonDistribution(mean / (double)meanDivider);
+        var pd = new PoissonDistribution(mean / meanDivider);
         var ret = pd.sample();
         // System.out.println("Random value " + ret);
 
@@ -357,9 +364,12 @@ public class Multiserver {
 
     private HashMap<String, Double> storeResults() {
        var results = new HashMap<String, Double>();
-        double servers = (double) numServer;
-        double numcust = (double) customers.size();
+
+        double servers = (double) numServer;  
         double maxloop = (double) numMaxLoop;
+        double numcust = (double) customers.size();
+        System.out.println("Customers size = "+numcust);
+
         results.put("numServers", servers);
         results.put("totalCost", servers * 320);
         results.put("costPerCustomer", servers * 320.0 / numcust);
@@ -367,8 +377,7 @@ public class Multiserver {
         results.put("finalClock", totalClock / maxloop);
         results.put("waitingTime", totalWaitingTime / maxloop);
         results.put("avgWaitingTime", (totalWaitingTime / maxloop) / numcust);
-        results.put("maxWaitingTime", maxWaitingTime);
-        //
+        results.put("maxWaitingTime", maxWaitingTime);        
         results.put("systemTime", totalSystemTime / maxloop);
         results.put("avgSystemTime", (totalSystemTime / maxloop) / numcust);
         results.put("maxQueue", (double) customersQ.getMaxQS());

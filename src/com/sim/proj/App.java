@@ -13,10 +13,13 @@ import java.util.HashMap;
 class App {
 
     private Multiserver multiserver = null;
-    
+    private Multiqueue multiqueue = null;
 
     private ArrayList<HashMap<String, Double>> multiServerResults;
     private ArrayList<HashMap<String, Double>> multiQueueResults;
+    // set the number of trial we do
+    private final int maxExecution = 5;
+    private final int maxQueueSize = 3;
 
     /**
      * Main static function
@@ -25,38 +28,50 @@ class App {
      */
     public static void main(String[] args) {
 
-        if(args.length==0){args = new String[6];}
-        args[0] = String.valueOf(1);//     # num execution should be set to 500
-        args[1] = String.valueOf(28800); //#max clock
-        args[2] = String.valueOf(150);   //# mean service
-        args[3] = String.valueOf(80); //# sigma service
-        args[4] = String.valueOf(3); //# number of server
-        args[5] = String.valueOf(2.0); //#mean divider
-       
-
-        new App(args);
-
+        new App();
 
     }
 
-    private App(String[] args) {
+    private App() {
 
+        multiQueueResults = new ArrayList<HashMap<String, Double>>();
+        multiServerResults = new ArrayList<HashMap<String, Double>>();
 
-        multiQueueResults = new ArrayList<HashMap<String, Double>>(4);
-        multiServerResults = new ArrayList<HashMap<String, Double>>(4);
-     
-        multiserver = new Multiserver(args);
         runSims();
     }
 
     private void runSims() {
 
+        var args = new String[6];
+        args[0] = String.valueOf(500);// # num execution should be set to 500
+        args[1] = String.valueOf(28800); // #max clock
+        args[2] = String.valueOf(150); // # mean service
+        args[3] = String.valueOf(80); // # sigma service
 
+        args[5] = String.valueOf(2.0); // #mean divider
 
-        multiServerResults.add(multiserver.runSim());
+        for (int i = 0; i < maxExecution; i++) {
+            multiserver = new Multiserver();
+            multiqueue = new Multiqueue();
+            args[4] = String.valueOf(i + 2); // # number of server
+            var sim = multiserver.runSim(args);
+            multiServerResults.add(sim);
+            // sim=multiqueue.runSim(args); not done yet
+            // multiQueueResults.add(sim); not done yet
+        }
 
-     printMultiServerResults();
+        // printing results
+        printMultiServerResults();
+        printMultiQueueResults();
+        // finding optimal parameters based on maxQueueSize
+        computeMultiserverOptimal();
+        computeMultiqueueOptimal();
+    }
 
+    private void computeMultiqueueOptimal() {
+    }
+
+    private void computeMultiserverOptimal() {
     }
 
     private void printMultiServerResults() {

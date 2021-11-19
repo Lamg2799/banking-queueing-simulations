@@ -17,7 +17,7 @@ class CustomerQueue {
     /**
      * Store the maximum number of customer waiting in line for all simulations
      */
-    private static int maxQueueSize = 0;
+    private int maxQueueSize = 0;
 
     /**
      * Constructor
