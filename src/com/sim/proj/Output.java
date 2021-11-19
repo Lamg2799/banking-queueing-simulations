@@ -47,12 +47,37 @@ public class Output {
         return -1;
     }
 
-    public String getMultiQueueResults(int index){
+    public String getMultiQueueResults(int index) {
 
         return "Not done yet";
     }
-    public String getMultiServerResults(int index){
+
+    public String getMultiServerResults(int index) {
 
         return "Not done yet";
+    }
+
+    public void printMultiServerResults() {
+        System.out.println("Printing multiserver results...");
+        for (HashMap<String, Double> hashMap : multiServerResults) {
+            System.out.println();
+
+            for (String s : hashMap.keySet()) {
+                System.out.println(s + ": " + hashMap.get(s));
+            }
+        }
+
+    }
+
+    public void printMultiQueueResults() {
+        System.out.println("Printing multiqueue results...");
+        for (HashMap<String, Double> hashMap : multiQueueResults) {
+            System.out.println();
+
+            for (String s : hashMap.keySet()) {
+                System.out.println(s + ": " + hashMap.get(s));
+            }
+        }
+        System.out.println();
     }
 }
