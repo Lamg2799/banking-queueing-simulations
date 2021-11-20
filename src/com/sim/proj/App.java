@@ -5,13 +5,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Main class for a Java implementation of the Multi server problem as a
- * practice for the CSI4124 Simulation and modelisation Created by:
- * 
- * @author Samuel Garneau, Oct 16, 2021, Ottawa, On
- * @version 1.0
- */
+
 class App {
     public static final String TEXT_RESET = "\u001B[0m";
     public static final String TEXT_GREEN = "\u001B[32m";

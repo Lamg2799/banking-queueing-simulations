@@ -1,6 +1,5 @@
 package com.sim.proj;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +9,13 @@ import java.util.Map;
 import java.util.Random;
 import org.apache.commons.math3.distribution.PoissonDistribution;
 
+/**
+ * Multi server implementaion as a part of our project for CSI4124 Simulation
+ * and modelisation Created by:
+ * 
+ * @author Samuel Garneau, nov 19th, 2021, Ottawa, On
+ * @version 1.0
+ */
 public class Multiserver {
     public static final String TEXT_RESET = "\u001B[0m";
     public static final String TEXT_GREEN = "\u001B[32m";
@@ -119,7 +125,7 @@ public class Multiserver {
 
         // Starts simulation
         System.out.println();
-        System.out.print(TEXT_GREEN+"Running multiserver simulation with " + args[4] + " servers...");
+        System.out.print(TEXT_GREEN + "Running multiserver simulation with " + args[4] + " servers...");
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -154,8 +160,7 @@ public class Multiserver {
             currentLoop++;
         }
 
-        System.out.println("Done"+TEXT_RESET);
-     
+        System.out.println("Done" + TEXT_RESET);
 
         // Generate the outputs
 
@@ -167,7 +172,7 @@ public class Multiserver {
      * simulation
      */
     private void initialize(String[] args) {
-       
+
         // initalize parameters variables
         numMaxLoop = Integer.parseInt(args[0]);
         maxClock = Double.parseDouble(args[1]);
@@ -184,7 +189,6 @@ public class Multiserver {
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
 
-       
     }
 
     /**
