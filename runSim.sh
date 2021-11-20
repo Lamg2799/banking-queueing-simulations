@@ -9,7 +9,7 @@ echo
 echo "Compiling...Done"
 echo
 echo "Starting Simulation..."
-cd /home/sam/Documents/UOttawa_21-22/Live_code/Java_Projects/multiserver/bin && java com.sim.proj.App
+cd /home/sam/Documents/UOttawa_21-22/Live_code/Java_Projects/multiserver/bin && java com.sim.proj.App 3 3 10
 
 echo
 echo "Simulation completed"

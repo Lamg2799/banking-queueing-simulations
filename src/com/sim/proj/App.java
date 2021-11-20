@@ -18,28 +18,29 @@ class App {
     private ArrayList<HashMap<String, Double>> multiServerResults;
     private ArrayList<HashMap<String, Double>> multiQueueResults;
     // set the number of trial we do
-    private final int maxExecution = 6;
-    private final int maxQueueSize = 3;
+    private  int maxExecution = 5;
+    private int maxQueueSize = 2;
     private final int meanService = 150;
     private final int sigmaService = 80;
     private final double maxClock = 28800;
-    private final double meanDivider = 1;
+    private double meanDivider = 1;
     private final int maxLoop = 500;
     private final int serverStartIndex = 1;
+    private String[] arguments;
 
     /**
-     * Main static function
-     * 
+     * Main static function 3 arguments [0]= max queue size; [1] = mean divider ; [2] maxExecution trials 
+     * will work with default value 2,1,5
      * @param args
      */
     public static void main(String[] args) {
 
-        new App();
+        new App(args);
 
     }
 
-    private App() {
-
+    private App(String[] args) {
+        arguments = args;
         multiQueueResults = new ArrayList<HashMap<String, Double>>();
         multiServerResults = new ArrayList<HashMap<String, Double>>();
         for (int j = 0; j < 1; j++) {
@@ -50,6 +51,11 @@ class App {
     private void runSims() {
 
         var args = new String[6];
+        if (arguments != null && arguments.length == 3) {
+            maxQueueSize = Integer.parseInt(arguments[0]);
+            meanDivider = Double.parseDouble(arguments[1]);
+            maxExecution =  Integer.parseInt(arguments[2]);
+        }
         args[0] = String.valueOf(maxLoop);// # num execution should be set to 500
         args[1] = String.valueOf(maxClock); // #max clock
         args[2] = String.valueOf(meanService); // # mean service
@@ -78,6 +84,26 @@ class App {
     }
 
     private void computeMultiserverOptimal() {
+
+        // find lowest cost within restriction
+
+        double mincost = Double.MAX_VALUE;
+        double minserver = 0;
+    
+
+        for (HashMap<String, Double> hashMap : multiServerResults) {
+            var h = hashMap.get("costPerCustomer");
+            var qsize = hashMap.get("maxQueue");
+            if (h < mincost && qsize <= maxQueueSize) {
+                mincost = h;
+                minserver = hashMap.get("numServers");
+            }
+
+        }
+
+        System.out.println("The optimal number of server with a mean divider of " + meanDivider
+                + " and a maximum queue size of " + maxQueueSize + " for the multiserver system is " + (int) minserver+" and a cost per customer of "+mincost+" $");
+
     }
 
     private void printMultiServerResults() {
