@@ -1,8 +1,6 @@
 package com.sim.proj;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,6 +11,8 @@ import java.util.Random;
 import org.apache.commons.math3.distribution.PoissonDistribution;
 
 public class Multiserver {
+    public static final String TEXT_RESET = "\u001B[0m";
+    public static final String TEXT_GREEN = "\u001B[32m";
     /**
      * List of customers to go through simulation
      */
@@ -101,7 +101,7 @@ public class Multiserver {
     /**
      * Stores the start time clock to compute execution time in millis
      */
-    private long startTime = 0;
+
     private double maxClock = 0;
 
     private double meanDivider = 2.0;
@@ -117,12 +117,9 @@ public class Multiserver {
         // retrieve config and create customers
         initialize(args);
 
-        // start running time clock
-        startTime = System.currentTimeMillis();
-
         // Starts simulation
         System.out.println();
-        System.out.println("Running simulation with " + args[4] + " servers");
+        System.out.print(TEXT_GREEN+"Running multiserver simulation with " + args[4] + " servers...");
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -157,7 +154,8 @@ public class Multiserver {
             currentLoop++;
         }
 
-        System.out.println("Simulation done... Generating report");
+        System.out.println("Done"+TEXT_RESET);
+     
 
         // Generate the outputs
 
@@ -169,8 +167,7 @@ public class Multiserver {
      * simulation
      */
     private void initialize(String[] args) {
-        System.out.print("Initializing... ");
-
+       
         // initalize parameters variables
         numMaxLoop = Integer.parseInt(args[0]);
         maxClock = Double.parseDouble(args[1]);
@@ -187,7 +184,7 @@ public class Multiserver {
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
 
-        System.out.println("Initializing done");
+       
     }
 
     /**
@@ -383,23 +380,24 @@ public class Multiserver {
         double servers = (double) numServer;
         double maxloop = (double) numMaxLoop;
         double numcust = (double) numCustomersServed / numMaxLoop;
-     
-        
 
+        results.put("custArrived", (double) numCustomersArrived / maxloop);
+        results.put("custServed", numcust);
         results.put("numServers", servers);
         results.put("totalCost", servers * 320);
         results.put("costPerCustomer", servers * 320.0 / numcust);
         results.put("loopDone", maxloop);
         results.put("finalClock", totalClock / maxloop);
         results.put("waitingTime", totalWaitingTime / maxloop);
-        results.put("avgWaitingTime", (totalWaitingTime / (maxloop / numcust)));
+        results.put("avgWaitingTime", (totalWaitingTime / maxloop) / numcust);
         results.put("maxWaitingTime", maxWaitingTime);
-        results.put("systemTime", (totalSystemTime / (maxloop / numcust)));
-        results.put("avgSystemTime", (totalSystemTime / (maxloop)) / numcust);
+        results.put("systemTime", (totalSystemTime / maxloop));
+        results.put("avgSystemTime", (totalSystemTime / maxloop) / numcust);
         results.put("maxQueue", (double) customersQ.getMaxQS());
         results.put("meanDivider", meanDivider);
+        results.put("typeServers", 1.0);
 
-        for (int i = 0; i < totalServerTime.length; i++) {
+        for (int i = 0; i < results.get("numServers"); i++) {
             // server busy poucentage
             var key = "timeServer" + i;
             var value = totalServerTime[i] / maxloop;
@@ -408,58 +406,8 @@ public class Multiserver {
             results.put(key + "%", value);
 
         }
-        printReport();
         return results;
         // adds the results to output class so its available for comparing
 
     }
-
-    /**
-     * Computes, saves and displays the results obtained from the simulations
-     */
-    private void printReport() {
-
-        // record stop time
-        long executionTime = System.currentTimeMillis() - startTime;
-
-        NumberFormat formatter = new DecimalFormat("#0.00");
-
-        System.out.println();
-        System.out.println();
-
-        /*
-         * loop through all customers display and save the result for (int i = 0; i <
-         * customers.size(); i++) { var c = customers.get(i);
-         * 
-         * System.out.println(c); System.out.println();
-         * 
-         * }
-         */
-        // Displaying result
-        System.out.println("Customers arrived = " + numCustomersArrived / numMaxLoop);
-        var m =  numCustomersServed / numMaxLoop;
-        System.out.println("Customers served = " + m +" Customers served % "+Math.round(100*(double)numCustomersServed/(double)numCustomersArrived));
-        System.out.println("Mean divider = " + meanDivider);
-        System.out.println("Total cost of server = " + formatter.format(numServer * 320) + " $ per day");
-        System.out.println("Total cost of server per customer served= "
-                + formatter.format((double) numServer * 320.0 / ((double) numCustomersServed / numMaxLoop))
-                + " $ per customer served");
-        System.out.println("Total execution Time (millis): " + String.valueOf(executionTime));
-        System.out.println("Num loop done: " + numMaxLoop);
-        System.out.println("Final clock (min): " + formatter.format((totalClock / numMaxLoop)/60));
-        System.out.println("Total Waiting Time (min): " + formatter.format((totalWaitingTime / numMaxLoop)/60)
-                + "; avg (min): " + formatter.format((totalWaitingTime / numCustomersServed)/60)
-                + "; Max waiting time (min): " + formatter.format(maxWaitingTime/60));
-        System.out.println("Total System Time (min): " + formatter.format((totalSystemTime / numMaxLoop)/60)
-                + "; avg (min): " + formatter.format((totalSystemTime / numCustomersServed)/60));
-        for (int i = 0; i < totalServerTime.length; i++) {
-
-            System.out.println("Total time Server #: " + i + " was Busy (min): "
-                    + formatter.format((totalServerTime[i] / numMaxLoop)/60) + "; (%):  "
-                    + formatter.format(100 * totalServerTime[i] / totalClock));
-        }
-        System.out.println("Max customers waiting in line: " + customersQ.getMaxQS());
-
-    }
-
 }
