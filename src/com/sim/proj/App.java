@@ -18,8 +18,14 @@ class App {
     private ArrayList<HashMap<String, Double>> multiServerResults;
     private ArrayList<HashMap<String, Double>> multiQueueResults;
     // set the number of trial we do
-    private final int maxExecution = 5;
+    private final int maxExecution = 6;
     private final int maxQueueSize = 3;
+    private final int meanService = 150;
+    private final int sigmaService = 80;
+    private final double maxClock = 28800;
+    private final double meanDivider = 1;
+    private final int maxLoop = 500;
+    private final int serverStartIndex = 1;
 
     /**
      * Main static function
@@ -36,33 +42,33 @@ class App {
 
         multiQueueResults = new ArrayList<HashMap<String, Double>>();
         multiServerResults = new ArrayList<HashMap<String, Double>>();
-
-        runSims();
+        for (int j = 0; j < 1; j++) {
+            runSims();
+        }
     }
 
     private void runSims() {
 
         var args = new String[6];
-        args[0] = String.valueOf(500);// # num execution should be set to 500
-        args[1] = String.valueOf(28800); // #max clock
-        args[2] = String.valueOf(150); // # mean service
-        args[3] = String.valueOf(80); // # sigma service
+        args[0] = String.valueOf(maxLoop);// # num execution should be set to 500
+        args[1] = String.valueOf(maxClock); // #max clock
+        args[2] = String.valueOf(meanService); // # mean service
+        args[3] = String.valueOf(sigmaService); // # sigma service
 
-        args[5] = String.valueOf(2.0); // #mean divider
+        args[5] = String.valueOf(meanDivider); // #mean divider
 
         for (int i = 0; i < maxExecution; i++) {
             multiserver = new Multiserver();
             multiqueue = new Multiqueue();
-            args[4] = String.valueOf(i + 2); // # number of server
+            args[4] = String.valueOf(i + serverStartIndex); // # number of server
             var sim = multiserver.runSim(args);
             multiServerResults.add(sim);
             // sim=multiqueue.runSim(args); not done yet
             // multiQueueResults.add(sim); not done yet
         }
-
-        // printMultiServerResults();
-        // printMultiQueueResults();
-
+        /*
+         * printMultiServerResults(); printMultiQueueResults();
+         */
         // finding optimal parameters based on maxQueueSize
         computeMultiserverOptimal();
         computeMultiqueueOptimal();
@@ -83,6 +89,7 @@ class App {
                 System.out.println(s + ": " + hashMap.get(s));
             }
         }
+        System.out.println();
 
     }
 

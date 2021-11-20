@@ -1,5 +1,6 @@
 package com.sim.proj;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class Multiserver {
      */
     private int currentLoop = 1;
 
+    private int numCustomersServed = 0;
+    private int numCustomersArrived = 0;
+
     /**
      * Stores the event clock for the current simulation
      */
@@ -39,13 +43,13 @@ public class Multiserver {
      * Stores the total time spent inside the simulation for all customers and
      * simulations
      */
-    private double totalSystemTime = 0;
+    private double totalSystemTime;
 
     /**
      * Stores the total waiting time spent inside the simulation for all customers
      * and simulations
      */
-    private double totalWaitingTime = 0;
+    private double totalWaitingTime;
 
     /**
      * Stores the max waiting time for all customers and simulations
@@ -98,21 +102,18 @@ public class Multiserver {
      * Stores the start time clock to compute execution time in millis
      */
     private long startTime = 0;
-    private double maxClock = 0;  
-   
-    private double meanDivider=1.0;
+    private double maxClock = 0;
+
+    private double meanDivider = 2.0;
 
     public Multiserver() {
-       
-
-       
 
     }
 
     /**
      * Run simulation method
      */
-    public HashMap<String, Double> runSim(String[]args) {
+    public HashMap<String, Double> runSim(String[] args) {
         // retrieve config and create customers
         initialize(args);
 
@@ -121,7 +122,7 @@ public class Multiserver {
 
         // Starts simulation
         System.out.println();
-        System.out.println("Running simulation...");
+        System.out.println("Running simulation with " + args[4] + " servers");
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -150,14 +151,16 @@ public class Multiserver {
                 }
             }
             // updates clocks and loops variables
+
+            emptyWaitingLine();
             totalClock += clock;
             currentLoop++;
         }
 
         System.out.println("Simulation done... Generating report");
-        
+
         // Generate the outputs
-        generateReport();
+
         return storeResults();
     }
 
@@ -165,25 +168,25 @@ public class Multiserver {
      * Retrieves the configs and create a list of customer before starting the first
      * simulation
      */
-    private void initialize(String []args) {
+    private void initialize(String[] args) {
         System.out.print("Initializing... ");
 
         // initalize parameters variables
-        numMaxLoop = Integer.parseInt(args[0]);  
+        numMaxLoop = Integer.parseInt(args[0]);
         maxClock = Double.parseDouble(args[1]);
         meanS = Integer.parseInt(args[2]);
         sigmaS = Integer.parseInt(args[3]);
         numServer = Integer.parseInt(args[4]);
         meanDivider = Double.parseDouble(args[5]);
+        numCustomersServed = 0;
 
-       
         rdmS = new Random();
         totalServerTime = new double[numServer];
         serverStatus = new State[numServer];
         customersQ = new CustomerQueue();
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
-        
+
         System.out.println("Initializing done");
     }
 
@@ -193,7 +196,7 @@ public class Multiserver {
     private void reInitialize() {
         clock = 0;
         // reinitializing variables
-       
+
         for (int i = 0; i < serverStatus.length; i++) {
 
             serverStatus[i] = State.IDLE;
@@ -201,27 +204,27 @@ public class Multiserver {
 
         double nextIA = 0;
         double currentIA = 0;
-       
+
         // generating InterArrival Events depending on customers number
-        for (int i = 0; currentIA < maxClock;i++) {
+        for (int i = 0; currentIA < maxClock; i++) {
             // generate next random value based on normal distribution with the required
             // mean and sigma
 
             // nextIA = Math.abs(rdmIA.nextGaussian() * sigmaIA + meanIA);
-           
+
             nextIA = generateNextIA(currentIA);
             currentIA += nextIA;
             Customer c;
-            if(currentLoop<=1||i>=customers.size()){
-            c = new Customer();
-            customers.add(c);
-            }else{
+            if (currentLoop <= 1 || i >= customers.size()) {
+                c = new Customer();
+                customers.add(c);
+            } else {
 
-                 c = customers.get(i);
+                c = customers.get(i);
             }
             // creates arrival event
             eventList.add(new Event(EventType.ARRIVAL, currentIA, c));
-           
+
         }
         // sort event list
         sort();
@@ -229,7 +232,7 @@ public class Multiserver {
 
     private double generateNextIA(double time) {
 
-        var mean =  (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
+        var mean = (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
 
         // System.out.println("Poisson Distribution");
 
@@ -240,11 +243,21 @@ public class Multiserver {
         return ret;
     }
 
+    private void emptyWaitingLine() {
+
+        while (!customersQ.isEmpty()) {
+            var c = customersQ.dequeue();
+            c.getCustomer().setWaitingTime(clock);
+            c.getCustomer().setTotalSystemTime(clock);
+        }
+    }
+
     /**
      * If the server is IDLE then it will create an DEPARTURE event, otherwise it
      * will enqueue the event in the customers queue
      */
     private void processArrival() {
+        numCustomersArrived++;
         var c = event.getCustomer();
         // record customer arrival time
         c.setArrivalTime(currentLoop, clock);
@@ -287,7 +300,7 @@ public class Multiserver {
             // schedule departure event
 
             double nextS = Math.abs(rdmS.nextGaussian() * sigmaS + meanS);
-            totalServerTime[index] += nextS;
+            totalServerTime[index] += (nextS);
             eventList.add(new Event(EventType.DEPARTURE, nextS + event.getTime(), c));
             sort();
 
@@ -306,6 +319,7 @@ public class Multiserver {
      */
     private void processDeparture() {
 
+        numCustomersServed++;
         var c = event.getCustomer();
         int serverIndex = c.getServerIndex();
         // System.out.println("Processing depart customer id " + c.getId() + " at " +
@@ -337,7 +351,7 @@ public class Multiserver {
             // schedule departure event
 
             double nextS = Math.abs(rdmS.nextGaussian() * sigmaS + meanS);
-            totalServerTime[serverIndex] += nextS;
+            totalServerTime[serverIndex] += (nextS);
             eventList.add(new Event(EventType.DEPARTURE, nextS + clock, c));
             sort();
 
@@ -363,12 +377,14 @@ public class Multiserver {
     }
 
     private HashMap<String, Double> storeResults() {
-       var results = new HashMap<String, Double>();
 
-        double servers = (double) numServer;  
+        var results = new HashMap<String, Double>();
+
+        double servers = (double) numServer;
         double maxloop = (double) numMaxLoop;
-        double numcust = (double) customers.size();
-        System.out.println("Customers size = "+numcust);
+        double numcust = (double) numCustomersServed / numMaxLoop;
+     
+        
 
         results.put("numServers", servers);
         results.put("totalCost", servers * 320);
@@ -376,10 +392,10 @@ public class Multiserver {
         results.put("loopDone", maxloop);
         results.put("finalClock", totalClock / maxloop);
         results.put("waitingTime", totalWaitingTime / maxloop);
-        results.put("avgWaitingTime", (totalWaitingTime / maxloop) / numcust);
-        results.put("maxWaitingTime", maxWaitingTime);        
-        results.put("systemTime", totalSystemTime / maxloop);
-        results.put("avgSystemTime", (totalSystemTime / maxloop) / numcust);
+        results.put("avgWaitingTime", (totalWaitingTime / (maxloop / numcust)));
+        results.put("maxWaitingTime", maxWaitingTime);
+        results.put("systemTime", (totalSystemTime / (maxloop / numcust)));
+        results.put("avgSystemTime", (totalSystemTime / (maxloop)) / numcust);
         results.put("maxQueue", (double) customersQ.getMaxQS());
         results.put("meanDivider", meanDivider);
 
@@ -392,15 +408,16 @@ public class Multiserver {
             results.put(key + "%", value);
 
         }
-return results;
+        printReport();
+        return results;
         // adds the results to output class so its available for comparing
-      
+
     }
 
     /**
      * Computes, saves and displays the results obtained from the simulations
      */
-    private void generateReport() {
+    private void printReport() {
 
         // record stop time
         long executionTime = System.currentTimeMillis() - startTime;
@@ -410,31 +427,35 @@ return results;
         System.out.println();
         System.out.println();
 
-        /* loop through all customers display and save the result
-        for (int i = 0; i < customers.size(); i++) {
-            var c = customers.get(i);
-
-            System.out.println(c);
-            System.out.println();
-
-        }
-*/
+        /*
+         * loop through all customers display and save the result for (int i = 0; i <
+         * customers.size(); i++) { var c = customers.get(i);
+         * 
+         * System.out.println(c); System.out.println();
+         * 
+         * }
+         */
         // Displaying result
+        System.out.println("Customers arrived = " + numCustomersArrived / numMaxLoop);
+        var m =  numCustomersServed / numMaxLoop;
+        System.out.println("Customers served = " + m +" Customers served % "+Math.round(100*(double)numCustomersServed/(double)numCustomersArrived));
+        System.out.println("Mean divider = " + meanDivider);
         System.out.println("Total cost of server = " + formatter.format(numServer * 320) + " $ per day");
         System.out.println("Total cost of server per customer served= "
-                + formatter.format((double) numServer * 320.0 / (double) customers.size()) + " $ per customer served");
+                + formatter.format((double) numServer * 320.0 / ((double) numCustomersServed / numMaxLoop))
+                + " $ per customer served");
         System.out.println("Total execution Time (millis): " + String.valueOf(executionTime));
         System.out.println("Num loop done: " + numMaxLoop);
-        System.out.println("Final clock (sec): " + formatter.format(totalClock / numMaxLoop));
-        System.out.println("Total Waiting Time (sec): " + formatter.format(totalWaitingTime / numMaxLoop)
-                + "; avg (sec): " + formatter.format((totalWaitingTime / numMaxLoop) / customers.size())
-                + "; Max waiting time (sec): " + formatter.format(maxWaitingTime));
-        System.out.println("Total System Time (sec): " + formatter.format(totalSystemTime / numMaxLoop)
-                + "; avg (sec): " + formatter.format((totalSystemTime / numMaxLoop) / customers.size()));
+        System.out.println("Final clock (min): " + formatter.format((totalClock / numMaxLoop)/60));
+        System.out.println("Total Waiting Time (min): " + formatter.format((totalWaitingTime / numMaxLoop)/60)
+                + "; avg (min): " + formatter.format((totalWaitingTime / numCustomersServed)/60)
+                + "; Max waiting time (min): " + formatter.format(maxWaitingTime/60));
+        System.out.println("Total System Time (min): " + formatter.format((totalSystemTime / numMaxLoop)/60)
+                + "; avg (min): " + formatter.format((totalSystemTime / numCustomersServed)/60));
         for (int i = 0; i < totalServerTime.length; i++) {
 
-            System.out.println("Total time Server #: " + i + " was Busy (sec): "
-                    + formatter.format(totalServerTime[i] / numMaxLoop) + "; (%):  "
+            System.out.println("Total time Server #: " + i + " was Busy (min): "
+                    + formatter.format((totalServerTime[i] / numMaxLoop)/60) + "; (%):  "
                     + formatter.format(100 * totalServerTime[i] / totalClock));
         }
         System.out.println("Max customers waiting in line: " + customersQ.getMaxQS());
