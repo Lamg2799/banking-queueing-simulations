@@ -1,5 +1,7 @@
 package com.sim.proj;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -27,7 +29,7 @@ class App {
     private final int maxLoop = 500;
     private final int serverStartIndex = 1;
     private String[] arguments;
-
+    private NumberFormat formatter = new DecimalFormat("#0.00");
     /**
      * Main static function 3 arguments [0]= max queue size; [1] = mean divider ; [2] maxExecution trials 
      * will work with default value 2,1,5
@@ -102,7 +104,7 @@ class App {
         }
 
         System.out.println("The optimal number of server with a mean divider of " + meanDivider
-                + " and a maximum queue size of " + maxQueueSize + " for the multiserver system is " + (int) minserver+" and a cost per customer of "+mincost+" $");
+                + " and a maximum queue size of " + maxQueueSize + " for the multiserver system is " + (int) minserver+" and a cost per customer of "+formatter.format(mincost)+"$");
 
     }
 
