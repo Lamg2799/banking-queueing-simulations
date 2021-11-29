@@ -46,18 +46,6 @@ public class Multiserver {
     private double totalClock = 0;
 
     /**
-     * Stores the total time spent inside the simulation for all customers and
-     * simulations
-     */
-    private double totalSystemTime;
-
-    /**
-     * Stores the total waiting time spent inside the simulation for all customers
-     * and simulations
-     */
-    private double totalWaitingTime;
-
-    /**
      * Stores the max waiting time for all customers and simulations
      */
     private double maxWaitingTime = 0;
@@ -110,7 +98,10 @@ public class Multiserver {
 
     private double maxClock = 0;
 
-    private double meanDivider = 2.0;
+    private double meanDivider = 2.0; // default value
+
+    private Results results = null;
+    private final double SERVER_RATE = 320.0;
 
     public Multiserver() {
 
@@ -119,13 +110,13 @@ public class Multiserver {
     /**
      * Run simulation method
      */
-    public HashMap<String, Double> runSim(String[] args) {
+    public Results runSim(String[] args) {
         // retrieve config and create customers
         initialize(args);
 
         // Starts simulation
         System.out.println();
-        System.out.print(TEXT_GREEN + "Running multiserver simulation with " + args[4] + " servers...");
+        System.out.print(TEXT_GREEN + "Running "+numMaxLoop+" multiserver simulations with " + args[4] + " servers...");
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -134,7 +125,7 @@ public class Multiserver {
             reInitialize();
 
             // loop through events in chronological order and process the right event type
-            // stops when all the customers left the server
+            // stops when the workday is over ( 8hr)
             while (clock < maxClock) {
 
                 // retrieve the next event
@@ -144,18 +135,27 @@ public class Multiserver {
 
                 // Calls the appropriate method depending on event type
                 switch (event.getType()) {
-                case DEPARTURE:
-                    processDeparture();
-                    break;
-                case ARRIVAL:
-                    processArrival();
-                    break;
+                    case DEPARTURE:
+                        processDeparture();
+                        break;
+                    case ARRIVAL:
+                        processArrival();
+                        break;
 
                 }
             }
-            // updates clocks and loops variables
 
-            emptyWaitingLine();
+            // record stats for customers who did not get served during work day
+            while (!customersQ.isEmpty()) {
+                var c = customersQ.dequeue();
+                c.getCustomer().setWaitingTime(clock);
+                c.getCustomer().setTotalSystemTime(clock);
+            }
+
+            // compute avg results for this execution
+            storeExecutionResults();
+
+            // updates clocks and loops variables
             totalClock += clock;
             currentLoop++;
         }
@@ -168,8 +168,7 @@ public class Multiserver {
     }
 
     /**
-     * Retrieves the configs and create a list of customer before starting the first
-     * simulation
+     * Retrieves the configs initialyze objects
      */
     private void initialize(String[] args) {
 
@@ -181,14 +180,13 @@ public class Multiserver {
         numServer = Integer.parseInt(args[4]);
         meanDivider = Double.parseDouble(args[5]);
         numCustomersServed = 0;
-
         rdmS = new Random();
         totalServerTime = new double[numServer];
         serverStatus = new State[numServer];
         customersQ = new CustomerQueue();
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
-
+        results = new Results();
     }
 
     /**
@@ -206,31 +204,41 @@ public class Multiserver {
         double nextIA = 0;
         double currentIA = 0;
 
-        // generating InterArrival Events depending on customers number
+        // generating InterArrival Events depending max time (8hr)
         for (int i = 0; currentIA < maxClock; i++) {
-            // generate next random value based on normal distribution with the required
-            // mean and sigma
-
-            // nextIA = Math.abs(rdmIA.nextGaussian() * sigmaIA + meanIA);
+            // generate next random value based on poisson distribution with mean based on
+            // quadratic equation
 
             nextIA = generateNextIA(currentIA);
+
             currentIA += nextIA;
             Customer c;
-            if (currentLoop <= 1 || i >= customers.size()) {
+            if (i >= customers.size()) {
                 c = new Customer();
+
                 customers.add(c);
             } else {
 
                 c = customers.get(i);
             }
+
+            c.setInterArrivalValue(nextIA);
             // creates arrival event
             eventList.add(new Event(EventType.ARRIVAL, currentIA, c));
 
         }
+
         // sort event list
         sort();
     }
 
+    /**
+     * generate next interarrival time based on poisson distribution and time of day
+     * function
+     * 
+     * @param time
+     * @return
+     */
     private double generateNextIA(double time) {
 
         var mean = (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
@@ -244,15 +252,6 @@ public class Multiserver {
         return ret;
     }
 
-    private void emptyWaitingLine() {
-
-        while (!customersQ.isEmpty()) {
-            var c = customersQ.dequeue();
-            c.getCustomer().setWaitingTime(clock);
-            c.getCustomer().setTotalSystemTime(clock);
-        }
-    }
-
     /**
      * If the server is IDLE then it will create an DEPARTURE event, otherwise it
      * will enqueue the event in the customers queue
@@ -261,7 +260,7 @@ public class Multiserver {
         numCustomersArrived++;
         var c = event.getCustomer();
         // record customer arrival time
-        c.setArrivalTime(currentLoop, clock);
+        c.setArrivalTime(clock);
         // check if any server idle
         Map<Integer, Integer> idleServers = new HashMap<Integer, Integer>();
         var s = serverStatus;
@@ -327,7 +326,6 @@ public class Multiserver {
         // clock + " server # " + serverIndex);
         // record customer system time
         c.setTotalSystemTime(clock);
-        totalSystemTime += c.getTotalSystemTime();
 
         // check if any customer are waiting in line
         if (customersQ.isEmpty()) {
@@ -342,7 +340,7 @@ public class Multiserver {
 
             // record customer waiting time
             c.setWaitingTime(clock);
-            totalWaitingTime += c.getWaitingTime();
+
             c.setServerIndex(serverIndex);
             // record the max waiting time
             if (c.getWaitingTime() > maxWaitingTime) {
@@ -377,41 +375,128 @@ public class Multiserver {
         Collections.sort(eventList, compareByTime);
     }
 
-    private HashMap<String, Double> storeResults() {
+    private void storeExecutionResults() {
+        // compute avg waiting and system time
+        var waitingAcc = 0.0;
+        var systemAcc = 0.0;
+        for (Customer customer : customers) {
+            waitingAcc += customer.getWaitingTime();
+            systemAcc += customer.getTotalSystemTime();
+        }
+        var waitingTimeAvg = waitingAcc / (double) customers.size();
+        var systemTimeAvg = systemAcc / (double) customers.size();
 
-        var results = new HashMap<String, Double>();
+        // compute variance
+        var waitingVarAcc = 0.0;
+        var systemVarAcc = 0.0;
+        for (Customer customer : customers) {
+            waitingVarAcc += Math.pow(customer.getWaitingTime() - waitingTimeAvg, 2);
+            systemVarAcc += Math.pow(customer.getTotalSystemTime() - systemTimeAvg, 2);
+        }
+        var waitingTimeAvgVar = waitingVarAcc / (double) customers.size();
+        var systemTimeAvgVar = systemVarAcc / (double) customers.size();
+
+        // store in results
+
+        results.addWaitingTime(waitingAcc);
+        results.addSystemTime(systemAcc);
+        results.addWaitingTimeAvgVar(waitingTimeAvgVar);
+        results.addSystemTimeAvgVar(systemTimeAvgVar);
+    }
+
+    private Results storeResults() {
 
         double servers = (double) numServer;
         double maxloop = (double) numMaxLoop;
-        double numcust = (double) numCustomersServed / numMaxLoop;
+        double numcust = (double) numCustomersServed / maxloop;
 
-        results.put("custArrived", (double) numCustomersArrived / maxloop);
-        results.put("custServed", numcust);
-        results.put("numServers", servers);
-        results.put("totalCost", servers * 320);
-        results.put("costPerCustomer", servers * 320.0 / numcust);
-        results.put("loopDone", maxloop);
-        results.put("finalClock", totalClock / maxloop);
-        results.put("waitingTime", totalWaitingTime / maxloop);
-        results.put("avgWaitingTime", (totalWaitingTime / maxloop) / numcust);
-        results.put("maxWaitingTime", maxWaitingTime);
-        results.put("systemTime", (totalSystemTime / maxloop));
-        results.put("avgSystemTime", (totalSystemTime / maxloop) / numcust);
-        results.put("maxQueue", (double) customersQ.getMaxQS());
-        results.put("meanDivider", meanDivider);
-        results.put("typeServers", 1.0);
+        var avgStats = getExecutionsStats(); // [0]=waitingTime;[1]=waitingTimeVar;[2]avgWaitingTime;[3]avgWaitingTimeVar;[4]=systemTime;[5]=systemTimeVar;[6]avgSystemTime;[7]avgSystemTimeVar;[8]confidenceInterval
 
-        for (int i = 0; i < results.get("numServers"); i++) {
-            // server busy poucentage
+        results.addResult("custArrived", (double) numCustomersArrived / maxloop);
+        results.addResult("maxQueue", (double) customersQ.getMaxQS());
+        results.addResult("custServed", numcust);
+        results.addResult("numServers", servers);
+        results.addResult("loopDone", maxloop);
+        results.addResult("typeServers", 1.0);
+        results.addResult("totalCost", (double) numServer * SERVER_RATE);
+        results.addResult("costPerCustomer", servers * SERVER_RATE / numcust);
+        results.addResult("finalClock", totalClock / maxloop);
+        results.addResult("waitingTime", avgStats[0]); // avg per executions
+        results.addResult("waitingTimeVar", avgStats[1]); // avg variance per executions
+        results.addResult("avgWaitingTime", avgStats[2]); // avg per execution per customers
+        results.addResult("avgWaitingTimeVar", avgStats[3]);// avg variance per executions per cutomers
+        results.addResult("maxWaitingTime", maxWaitingTime);
+        results.addResult("systemTime", avgStats[4]);
+        results.addResult("systemTimeVar", avgStats[5]);
+        results.addResult("avgSystemTime", avgStats[6]);
+        results.addResult("avgSystemTimeVar", avgStats[7]);
+        results.addResult("waitingTimeH", avgStats[8]);
+        results.addResult("systemTimeH", avgStats[9]);
+        results.addResult("meanDivider", meanDivider);
+
+        // compute server busy pourcentage
+        for (int i = 0; i < numServer; i++) {
+
             var key = "timeServer" + i;
             var value = totalServerTime[i] / maxloop;
-            results.put(key, value);
+            results.addResult(key, value);
             value = 100 * totalServerTime[i] / totalClock;
-            results.put(key + "%", value);
+            results.addResult(key + "%", value);
 
         }
+
         return results;
         // adds the results to output class so its available for comparing
 
     }
+
+    private double[] getExecutionsStats() {
+        var maxloop = (double) numMaxLoop;
+        var custServed = (double) numCustomersServed / maxloop;
+        double[] ret = new double[10];
+        // init array
+        for (int i = 0; i < ret.length; i++) {
+            ret[i] = 0.0;
+        }
+
+        // compute total waiting time
+        for (double avgwait : results.getWaitingTime()) {
+            ret[0] += avgwait;
+        }
+        ret[0] = ret[0] / maxloop;
+
+        // compute total waiting time variance
+        for (double avgwaitVar : results.getWaitingTimeAvgVar()) {
+            ret[1] += Math.pow(avgwaitVar - ret[0], 2);
+        }
+        ret[1] = ret[1] / (maxloop - 1);
+
+        // compute avg waiting time and variance per customers
+        ret[2] = ret[0] / custServed;
+        ret[3] = ret[1] / custServed;
+
+        // compute total system time
+        for (double avgsyst : results.getSystemTime()) {
+            ret[4] += avgsyst;
+        }
+        ret[4] = ret[4] / maxloop;
+
+        // compute total system time variance
+        for (double avgsystVar : results.getSystemTimeAvgVar()) {
+            ret[5] += Math.pow(avgsystVar - ret[4], 2);
+        }
+        ret[5] = ret[5] / (maxloop - 1);
+
+        // compute avg system time and variance per customers
+        ret[6] = ret[4] / custServed;
+        ret[7] = ret[5] / custServed;
+
+        // compute confidence interval
+        var z = 0.7088; // to be validated from normal table
+        ret[8] = z * Math.sqrt(ret[1]) / Math.sqrt(maxloop);
+        ret[9] = z * Math.sqrt(ret[5]) / Math.sqrt(maxloop);
+
+        return ret;
+    }
+
 }
