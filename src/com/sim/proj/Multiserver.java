@@ -193,9 +193,10 @@ public class Multiserver {
      * Reset all the variable before starting a new simulation
      */
     private void reInitialize() {
-        clock = 0;
+       
         // reinitializing variables
-
+        clock = 0;
+        
         for (int i = 0; i < serverStatus.length; i++) {
 
             serverStatus[i] = State.IDLE;
