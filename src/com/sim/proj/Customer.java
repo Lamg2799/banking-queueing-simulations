@@ -1,7 +1,7 @@
 package com.sim.proj;
 
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
+
+import java.util.LinkedList;
 
 /**
  * Class Customer to record waiting and total system time during the simulation
@@ -26,37 +26,20 @@ public class Customer {
     /**
      * Stores customer arrival time in system
      */
-    private double arrivalTime = 0;
+    private double arrivalTime = 0.0;
 
     /**
-     * Waiting time for one simulation, averaged from all simulations ran
+     * Waiting time for one simulation,
      */
-    private double waitingTime = 0;
+    private double waitingTime = 0.0;
     /**
-     * Total system time for one simulation, averaged from all simulations ran
+     * Total system time for one simulation,
      */
-    private double totalSystemTime = 0;
-
+    private double totalSystemTime = 0.0;
     /**
-     * Total Waiting time for all simulations
+     * Random inter-arrival values for each execution
      */
-    private double waitingTimeMultiple = 0;
-
-    /**
-     * Total System time for all simulations
-     */
-    private double totalSystemTimeMultiple = 0;
-
-    /**
-     * Name of customer
-     */
-    private String name = "";
-
-    /**
-     * Stores the current number of simulation executed to compute average waiting
-     * and system time
-     */
-    private static int numCurrentLoop = 0;
+    private LinkedList<Double> interArrivalValues = null;
 
     /**
      * Constructor will generate random name
@@ -64,18 +47,7 @@ public class Customer {
     public Customer() {
 
         id = initId++;
-
-    }
-
-    /**
-     * Constructor will set name from argument
-     * 
-     * @param name
-     */
-    public Customer(String name) {
-
-        this.name = name;
-        id = initId++;
+        interArrivalValues = new LinkedList<Double>();
 
     }
 
@@ -87,9 +59,9 @@ public class Customer {
      * 
      * @param clock
      */
-    public void setWaitingTime(double clock) {
+    public void setWaitingTime(Double clock) {
         waitingTime = clock - arrivalTime;
-        waitingTimeMultiple += waitingTime;
+
     }
 
     public void setServerIndex(int i) {
@@ -102,9 +74,9 @@ public class Customer {
      * 
      * @param clock
      */
-    public void setTotalSystemTime(double clock) {
+    public void setTotalSystemTime(Double clock) {
+
         totalSystemTime = clock - arrivalTime;
-        totalSystemTimeMultiple += totalSystemTime;
 
     }
 
@@ -114,12 +86,19 @@ public class Customer {
      * @param currentLoop
      * @param clock
      */
-    public void setArrivalTime(int currentLoop, double clock) {
+    public void setArrivalTime(double clock) {
         this.arrivalTime = clock;
-        numCurrentLoop = currentLoop;
+
+    }
+
+    public void setInterArrivalValue(Double ia) {
+        interArrivalValues.add(ia);
     }
 
     // getters
+    public LinkedList<Double> getInterArrivalValues(Double ia) {
+        return interArrivalValues;
+    }
 
     public int getServerIndex() {
         return serverIndex;
@@ -132,15 +111,6 @@ public class Customer {
      */
     public int getId() {
         return id;
-    }
-
-    /**
-     * Customer name
-     * 
-     * @return
-     */
-    public String getName() {
-        return name;
     }
 
     /**
@@ -166,20 +136,20 @@ public class Customer {
      * String representation of customer
      */
     public String toString() {
-        totalSystemTime = totalSystemTimeMultiple / numCurrentLoop;
-        waitingTime = waitingTimeMultiple / numCurrentLoop;
-        NumberFormat formatter = new DecimalFormat("#0.00");
-        String s = "";
-
-        s += "Customer id: " + id;
-
-        s += "; Served by server #: " + serverIndex;
-
-        s += "\nWaiting time: " + formatter.format(waitingTime) + " sec";
-
-        s += "; Total System time: " + formatter.format(totalSystemTime) + " sec";
-
-        return s;
+        /*
+         * totalSystemTime = totalSystemTimeMultiple / numCurrentLoop; waitingTime =
+         * waitingTimeMultiple / numCurrentLoop; NumberFormat formatter = new
+         * DecimalFormat("#0.00"); String s = "";
+         * 
+         * s += "Customer id: " + id;
+         * 
+         * s += "; Served by server #: " + serverIndex;
+         * 
+         * s += "\nWaiting time: " + formatter.format(waitingTime) + " sec";
+         * 
+         * s += "; Total System time: " + formatter.format(totalSystemTime) + " sec";
+         */
+        return "Customer.toString() needs to be reimplemented";
     }
 
 }
