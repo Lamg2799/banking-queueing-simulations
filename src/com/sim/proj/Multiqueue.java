@@ -1,10 +1,9 @@
 package com.sim.proj;
 
-import java.util.HashMap;
 
 public class Multiqueue {
 
-    public HashMap<String, Double> runSim(String[] args) {
+    public Results runSim(String[] args) {
         // Do your thing
 
         // ...your code...
@@ -13,10 +12,10 @@ public class Multiqueue {
         return storeResults();
     }
 
-    private HashMap<String, Double> storeResults() {
+    private Results storeResults() {
 
         
-        var results = new HashMap<String, Double>();
+        var results = new Results();
         /*
           double servers = (double) numServer; double maxloop = (double) numMaxLoop;
           double numcust = (double) numCustomersServed / numMaxLoop;

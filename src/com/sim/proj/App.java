@@ -5,7 +5,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
 class App {
     public static final String TEXT_RESET = "\u001B[0m";
     public static final String TEXT_GREEN = "\u001B[32m";
@@ -13,17 +12,17 @@ class App {
     private Multiserver multiserver = null;
     private Multiqueue multiqueue = null;
     // data structure to store result
-    private ArrayList<HashMap<String, Double>> multiServerResults;
-    private ArrayList<HashMap<String, Double>> multiQueueResults;
+    private ArrayList<Results> multiServerResults;
+    private ArrayList<Results> multiQueueResults;
 
     private int maxExecution = 5; // default value
     private int maxQueueSize = 2; // default value
     private double meanDivider = 1; // default value
-    private final int meanService = 150; // constant
-    private final int sigmaService = 80; // constant
-    private final double maxClock = 28800; // constant
-    private final int maxLoop = 500; // constant
-    private final int serverStartIndex = 1; // constant
+    private final int MEAN_SERVICE_TIME = 150; // constant
+    private final int SIGMA_SERVICE_TIME = 80; // constant
+    private final double MAX_CLOCK = 28800; // constant
+    private final int MAX_LOOP = 1000; // constant
+    private final int SERVER_START_NUM = 1; // constant
     private String[] arguments;
     private NumberFormat formatter = new DecimalFormat("#0.00");
 
@@ -42,8 +41,8 @@ class App {
     // constructor
     private App(String[] args) {
         arguments = args;
-        multiQueueResults = new ArrayList<HashMap<String, Double>>();
-        multiServerResults = new ArrayList<HashMap<String, Double>>();
+        multiQueueResults = new ArrayList<Results>();
+        multiServerResults = new ArrayList<Results>();
         // run simulations
         runSims();
 
@@ -58,54 +57,63 @@ class App {
             meanDivider = Double.parseDouble(arguments[1]);
             maxExecution = Integer.parseInt(arguments[2]);
         }
-        args[0] = String.valueOf(maxLoop);// # num execution should be set to 500
-        args[1] = String.valueOf(maxClock); // #max clock
-        args[2] = String.valueOf(meanService); // # mean service
-        args[3] = String.valueOf(sigmaService); // # sigma service
+        args[0] = String.valueOf(MAX_LOOP);// # num execution should be set to 500
+        args[1] = String.valueOf(MAX_CLOCK); // #max clock
+        args[2] = String.valueOf(MEAN_SERVICE_TIME); // # mean service
+        args[3] = String.valueOf(SIGMA_SERVICE_TIME); // # sigma service
 
         args[5] = String.valueOf(meanDivider); // #mean divider
 
         // loops through both kind of simulation and trying different number of servers
-        for (int i = 0; i < maxExecution; i++) {
+        for (int serverNum = SERVER_START_NUM; serverNum < maxExecution + SERVER_START_NUM; serverNum++) {
             multiserver = new Multiserver();
             multiqueue = new Multiqueue();
-            args[4] = String.valueOf(i + serverStartIndex); // # number of server
-            var sim = multiserver.runSim(args);
-            if (sim != null) {
-                multiServerResults.add(sim);
-            }
-            sim = multiqueue.runSim(args);
-            if (sim != null) {
-                multiQueueResults.add(sim);
-            }
+            args[4] = String.valueOf(serverNum); // # number of server
+
+            // run multiserver sim
+            multiServerResults.add(multiserver.runSim(args));
+
+            // run multiqueue sim
+            multiQueueResults.add(multiqueue.runSim(args));
+
         }
 
         // printing results for all trials
-        printMultiServerResults();
-        printMultiQueueResults();
+        try {
+            printMultiServerResults();
+            computeMultiserverOptimal();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+        try {
+            printMultiQueueResults();
+            computeMultiqueueOptimal();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
 
         // finding optimal parameters based on maxQueueSize
-        computeMultiserverOptimal();
-        computeMultiqueueOptimal();
+
     }
 
     private void computeMultiqueueOptimal() {
 
         // find lowest cost within restriction
-        System.out.println(TEXT_GREEN+"Finding optimal result for multiqueue..."+TEXT_RESET);
+        System.out.println(TEXT_GREEN + "Finding optimal result for multiqueue..." + TEXT_RESET);
         double mincost = Double.MAX_VALUE;
         double minserver = 0;
         double cost = 0;
         if (multiQueueResults.size() > 0) {
-            for (HashMap<String, Double> hashMap : multiQueueResults) {
-                if (hashMap.size() > 0) {
-                    var h = hashMap.get("costPerCustomer");
-                    var qsize = hashMap.get("maxQueue");
-                    if (h < mincost && qsize <= maxQueueSize) {
-                        mincost = h;
-                        minserver = hashMap.get("numServers");
-                        cost = hashMap.get("totalCost");
-                    }
+            for (Results rst : multiQueueResults) {
+                // retrieve result hashmap
+                var r = rst.getResults();
+
+                var cc = r.get("costPerCustomer");
+                var qsize = r.get("maxQueue");
+                if (cc < mincost && qsize <= maxQueueSize) {
+                    mincost = cc;
+                    minserver = r.get("numServers");
+                    cost = r.get("totalCost");
                 }
 
             }
@@ -121,21 +129,23 @@ class App {
     private void computeMultiserverOptimal() {
 
         // find lowest cost within restriction
-        System.out.println(TEXT_GREEN+"Finding optimal result for multiserver..."+TEXT_RESET);
+        System.out.println(TEXT_GREEN + "Finding optimal result for multiserver..." + TEXT_RESET);
         double mincost = Double.MAX_VALUE;
         double minserver = 0;
         double cost = 0;
         if (multiServerResults.size() > 0) {
-            for (HashMap<String, Double> hashMap : multiServerResults) {
-                if (hashMap.size() > 0) {
-                    var h = hashMap.get("costPerCustomer");
-                    var qsize = hashMap.get("maxQueue");
-                    if (h < mincost && qsize <= maxQueueSize) {
-                        mincost = h;
-                        minserver = hashMap.get("numServers");
-                        cost = hashMap.get("totalCost");
-                    }
+            for (Results rst : multiServerResults) {
+                // retrieve result hashmap
+                var r = rst.getResults();
+
+                var cc = r.get("costPerCustomer");
+                var qsize = r.get("maxQueue");
+                if (cc < mincost && qsize <= maxQueueSize) {
+                    mincost = cc;
+                    minserver = r.get("numServers");
+                    cost = r.get("totalCost");
                 }
+
             }
             if (cost > 0) {
                 System.out.println("The optimal number of server with a mean divider of " + meanDivider
@@ -148,30 +158,30 @@ class App {
 
     private void printMultiServerResults() {
         System.out.println();
-        System.out.println(TEXT_GREEN+"Printing multiserver results..."+TEXT_RESET);
+        System.out.println(TEXT_GREEN + "Printing multiserver results..." + TEXT_RESET);
         if (multiServerResults.size() > 0) {
-            for (HashMap<String, Double> hashMap : multiServerResults) {
+            for (Results rst : multiServerResults) {
                 System.out.println();
-                if (hashMap.size() > 0) {
-                    printReport(hashMap);
-                }
+
+                printReport(rst.getResults());
+
             }
-        } 
+        }
         System.out.println();
 
     }
 
     private void printMultiQueueResults() {
         System.out.println();
-        System.out.println(TEXT_GREEN+"Printing multiqueue results..."+TEXT_RESET);
+        System.out.println(TEXT_GREEN + "Printing multiqueue results..." + TEXT_RESET);
         if (multiQueueResults.size() > 0) {
-            for (HashMap<String, Double> hashMap : multiQueueResults) {
+            for (Results rst : multiQueueResults) {
                 System.out.println();
-                if (hashMap.size() > 0) {
-                    printReport(hashMap);
-                }
+
+                printReport(rst.getResults());
+
             }
-        } 
+        }
         System.out.println();
     }
 
@@ -199,11 +209,30 @@ class App {
                 + formatter.format(results.get("costPerCustomer")) + " $ per customer served");
         System.out.println("Num loop done: " + formattershort.format(results.get("loopDone")));
         System.out.println("Final clock (min): " + formatter.format(results.get("finalClock") / 60));
-        System.out.println("Total Waiting Time (min): " + formatter.format(results.get("waitingTime") / 60)
-                + "; avg (min): " + formatter.format(results.get("avgWaitingTime") / 60) + "; Max waiting time (min): "
+        // waiting time stats
+        System.out.println("Total waiting time average per executions (Ȳ) (min): "
+                + formatter.format(results.get("waitingTime") / 60)
+                + "; Total waiting time average variance per executions (S^2) (min): "
+                + formatter.format(results.get("waitingTimeVar") / 60)
+                + "; average per executions per customers (Ȳ) (min): "
+                + formatter.format(results.get("avgWaitingTime") / 60)
+                + "; average variance per executions per customers (S^2) (min): "
+                + formatter.format(results.get("avgWaitingTimeVar") / 60)
+                + "; Max waiting time (min): "
                 + formatter.format(results.get("maxWaitingTime") / 60));
-        System.out.println("Total System Time (min): " + formatter.format(results.get("systemTime") / 60)
-                + "; avg (min): " + formatter.format(results.get("avgSystemTime") / 60));
+                System.out.println("Wainting time confidence interval (min): " + formatter.format(results.get("waitingTimeH") / 60));
+        // system time stats
+        System.out.println("Total system time average per executions (Ȳ) (min): "
+                + formatter.format(results.get("systemTime") / 60)
+                + "; Total system time average variance per executions (S^2) (min): "
+                + formatter.format(results.get("systemTimeVar") / 60)
+                + "; average per executions per customers (Ȳ) (min): "
+                + formatter.format(results.get("avgSystemTime") / 60)
+                + "; average variance per executions per customers (S^2) (min): "
+                + formatter.format(results.get("avgSystemTimeVar") / 60));
+
+        System.out.println("System time confidence interval (min): " + formatter.format(results.get("systemTimeH") / 60));
+
         for (int i = 0; i < results.get("numServers"); i++) {
 
             System.out.println("Total time Server #: " + i + " was Busy (min): "
