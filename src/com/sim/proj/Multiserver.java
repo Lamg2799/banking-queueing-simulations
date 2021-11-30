@@ -116,7 +116,8 @@ public class Multiserver {
 
         // Starts simulation
         System.out.println();
-        System.out.print(TEXT_GREEN + "Running "+numMaxLoop+" multiserver simulations with " + args[4] + " servers...");
+        System.out.print(
+                TEXT_GREEN + "Running " + numMaxLoop + " multiserver simulations with " + args[4] + " servers...");
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -184,8 +185,6 @@ public class Multiserver {
         totalServerTime = new double[numServer];
         serverStatus = new State[numServer];
         customersQ = new CustomerQueue();
-        eventList = new LinkedList<Event>();
-        customers = new ArrayList<Customer>();
         results = new Results();
     }
 
@@ -193,35 +192,31 @@ public class Multiserver {
      * Reset all the variable before starting a new simulation
      */
     private void reInitialize() {
-       
+
         // reinitializing variables
         clock = 0;
-        
+        eventList = new LinkedList<Event>();
+        customers = new ArrayList<Customer>();
+
         for (int i = 0; i < serverStatus.length; i++) {
 
             serverStatus[i] = State.IDLE;
         }
 
+        // generating InterArrival Events depending max time (8hr)
         double nextIA = 0;
         double currentIA = 0;
 
-        // generating InterArrival Events depending max time (8hr)
-        for (int i = 0; currentIA < maxClock; i++) {
+        while (currentIA < maxClock) {
             // generate next random value based on poisson distribution with mean based on
             // quadratic equation
 
             nextIA = generateNextIA(currentIA);
 
             currentIA += nextIA;
-            Customer c;
-            if (i >= customers.size()) {
-                c = new Customer();
+            Customer c = new Customer();
 
-                customers.add(c);
-            } else {
-
-                c = customers.get(i);
-            }
+            customers.add(c);
 
             c.setInterArrivalValue(nextIA);
             // creates arrival event
@@ -380,6 +375,7 @@ public class Multiserver {
         // compute avg waiting and system time
         var waitingAcc = 0.0;
         var systemAcc = 0.0;
+
         for (Customer customer : customers) {
             waitingAcc += customer.getWaitingTime();
             systemAcc += customer.getTotalSystemTime();
@@ -453,7 +449,7 @@ public class Multiserver {
 
     private double[] getExecutionsStats() {
         var maxloop = (double) numMaxLoop;
-        var custServed = (double) numCustomersServed / maxloop;
+        var cust = (double) numCustomersArrived / maxloop;
         double[] ret = new double[10];
         // init array
         for (int i = 0; i < ret.length; i++) {
@@ -467,14 +463,14 @@ public class Multiserver {
         ret[0] = ret[0] / maxloop;
 
         // compute total waiting time variance
-        for (double avgwaitVar : results.getWaitingTimeAvgVar()) {
-            ret[1] += Math.pow(avgwaitVar - ret[0], 2);
+        for (double avgwait : results.getWaitingTime()) {
+            ret[1] += Math.pow(avgwait - ret[0], 2);
         }
         ret[1] = ret[1] / (maxloop - 1);
 
         // compute avg waiting time and variance per customers
-        ret[2] = ret[0] / custServed;
-        ret[3] = ret[1] / custServed;
+        ret[2] = ret[0] / cust;
+        ret[3] = ret[1] / cust;
 
         // compute total system time
         for (double avgsyst : results.getSystemTime()) {
@@ -483,14 +479,15 @@ public class Multiserver {
         ret[4] = ret[4] / maxloop;
 
         // compute total system time variance
-        for (double avgsystVar : results.getSystemTimeAvgVar()) {
-            ret[5] += Math.pow(avgsystVar - ret[4], 2);
+        for (double avgsyst : results.getSystemTime()) {
+            
+            ret[5] += Math.pow(avgsyst - ret[4], 2);
         }
-        ret[5] = ret[5] / (maxloop - 1);
+        ret[5] =  ret[5] / (maxloop - 1);
 
         // compute avg system time and variance per customers
-        ret[6] = ret[4] / custServed;
-        ret[7] = ret[5] / custServed;
+        ret[6] = ret[4] / cust;
+        ret[7] = ret[5] / cust;
 
         // compute confidence interval
         var z = 0.7088; // to be validated from normal table

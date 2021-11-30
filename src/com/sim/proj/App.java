@@ -21,7 +21,7 @@ class App {
     private final int MEAN_SERVICE_TIME = 150; // constant
     private final int SIGMA_SERVICE_TIME = 80; // constant
     private final double MAX_CLOCK = 28800; // constant
-    private final int MAX_LOOP = 1000; // constant
+    private final int MAX_LOOP = 500; // constant
     private final int SERVER_START_NUM = 1; // constant
     private String[] arguments;
     private NumberFormat formatter = new DecimalFormat("#0.00");
@@ -161,10 +161,10 @@ class App {
         System.out.println(TEXT_GREEN + "Printing multiserver results..." + TEXT_RESET);
         if (multiServerResults.size() > 0) {
             for (Results rst : multiServerResults) {
+                
                 System.out.println();
 
                 printReport(rst.getResults());
-
             }
         }
         System.out.println();
@@ -212,26 +212,28 @@ class App {
         // waiting time stats
         System.out.println("Total waiting time average per executions (Ȳ) (min): "
                 + formatter.format(results.get("waitingTime") / 60)
-                + "; Total waiting time average variance per executions (S^2) (min): "
-                + formatter.format(results.get("waitingTimeVar") / 60)
+                + "; Total waiting time average variance per executions (S^2) : "
+                + formatter.format(results.get("waitingTimeVar") / 3600)
                 + "; average per executions per customers (Ȳ) (min): "
                 + formatter.format(results.get("avgWaitingTime") / 60)
-                + "; average variance per executions per customers (S^2) (min): "
-                + formatter.format(results.get("avgWaitingTimeVar") / 60)
+                + "; average variance per executions per customers (S^2) : "
+                + formatter.format(results.get("avgWaitingTimeVar") / 3600)
                 + "; Max waiting time (min): "
                 + formatter.format(results.get("maxWaitingTime") / 60));
-                System.out.println("Wainting time confidence interval (min): " + formatter.format(results.get("waitingTimeH") / 60));
+        System.out.println(
+                "Wainting time confidence interval (min): " + formatter.format(results.get("waitingTimeH") / 60));
         // system time stats
         System.out.println("Total system time average per executions (Ȳ) (min): "
                 + formatter.format(results.get("systemTime") / 60)
-                + "; Total system time average variance per executions (S^2) (min): "
-                + formatter.format(results.get("systemTimeVar") / 60)
+                + "; Total system time average variance per executions (S^2): "
+                + formatter.format(results.get("systemTimeVar") / 3600)
                 + "; average per executions per customers (Ȳ) (min): "
                 + formatter.format(results.get("avgSystemTime") / 60)
-                + "; average variance per executions per customers (S^2) (min): "
-                + formatter.format(results.get("avgSystemTimeVar") / 60));
+                + "; average variance per executions per customers (S^2) : "
+                + formatter.format(results.get("avgSystemTimeVar") / 3600));
 
-        System.out.println("System time confidence interval (min): " + formatter.format(results.get("systemTimeH") / 60));
+        System.out
+                .println("System time confidence interval (min): " + formatter.format(results.get("systemTimeH") / 60));
 
         for (int i = 0; i < results.get("numServers"); i++) {
 
