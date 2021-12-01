@@ -102,6 +102,7 @@ public class Multiserver {
 
     private Results results = null;
     private final double SERVER_RATE = 320.0;
+    private final double Z = 0.7088;//from normal table
 
     public Multiserver() {
 
@@ -489,10 +490,9 @@ public class Multiserver {
         ret[6] = ret[4] / cust;
         ret[7] = ret[5] / cust;
 
-        // compute confidence interval
-        var z = 0.7088; // to be validated from normal table
-        ret[8] = z * Math.sqrt(ret[1]) / Math.sqrt(maxloop);
-        ret[9] = z * Math.sqrt(ret[5]) / Math.sqrt(maxloop);
+        // compute confidence interval    
+        ret[8] = Z * Math.sqrt(ret[1]) / Math.sqrt(maxloop);
+        ret[9] = Z * Math.sqrt(ret[5]) / Math.sqrt(maxloop);
 
         return ret;
     }
