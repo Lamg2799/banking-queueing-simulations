@@ -114,7 +114,7 @@ class App {
     }
 
     /**
-     * Main execution function,
+     * Main execution function for the project,
      * will execute all the simulations trials with different parameters
      * stops when it reachs maxExecution
      */
