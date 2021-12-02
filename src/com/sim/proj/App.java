@@ -355,5 +355,5 @@ enum EventType {
     /**
      * Event type Departure
      */
-    DEPARTURE
+    DEPARTURE;
 };
