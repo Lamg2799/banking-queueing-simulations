@@ -18,16 +18,16 @@ class Event {
     private EventType type;
 
     /**
-     * Customer owning the event
+     * Customer subject of the event
      */
     private Customer customer;
 
     /**
      * Constructor
      * 
-     * @param Eventype
-     * @param time
-     * @param customer
+     * @param ty departure or arrival
+     * @param ti scheduled time of event
+     * @param c the customer subject of the event 
      */
     public Event(EventType ty, double ti, Customer c) {
         // the time the event will happen
@@ -41,7 +41,7 @@ class Event {
     /**
      * The event time
      * 
-     * @return
+     * @return time of event
      */
     public Double getTime() {
         return time;
@@ -50,16 +50,16 @@ class Event {
     /**
      * The event type (ARRIVAL or DEPARTURE)
      * 
-     * @return
+     * @return ARRIVAL or DEPARTURE
      */
     public EventType getType() {
         return type;
     }
 
     /**
-     * The customer owning the event
+     * The customer subject of the event
      * 
-     * @return
+     * @return the customer subject of the event 
      */
     public Customer getCustomer() {
         return customer;

@@ -1,6 +1,5 @@
 package com.sim.proj;
 
-
 import java.util.LinkedList;
 
 /**
@@ -12,7 +11,7 @@ import java.util.LinkedList;
 public class Customer {
 
     /**
-     * static id to record last id
+     * Static id to record last id
      */
     private static int initId = 0;
 
@@ -21,6 +20,9 @@ public class Customer {
      */
     private int id;
 
+    /**
+     * The server number that is processing the service
+     */
     private int serverIndex;
 
     /**
@@ -37,9 +39,9 @@ public class Customer {
      */
     private double totalSystemTime = 0.0;
     /**
-     * Random inter-arrival values for each execution
+     * Random inter-arrival value
      */
-    private LinkedList<Double> interArrivalValues = null;
+    private double interArrivalValues = 0.0;
 
     /**
      * Constructor will generate random name
@@ -47,7 +49,6 @@ public class Customer {
     public Customer() {
 
         id = initId++;
-        interArrivalValues = new LinkedList<Double>();
 
     }
 
@@ -57,13 +58,18 @@ public class Customer {
      * To compute the waiting time based on the current clock when a customer leaves
      * the waiting line
      * 
-     * @param clock
+     * @param clock the current clock
      */
     public void setWaitingTime(Double clock) {
         waitingTime = clock - arrivalTime;
 
     }
 
+    /**
+     * Set server number that is processing the service
+     * 
+     * @param i the server index
+     */
     public void setServerIndex(int i) {
         serverIndex = i;
     }
@@ -72,7 +78,7 @@ public class Customer {
      * To compute the waiting and total system time based on the current clock when
      * a customer is leaving the system
      * 
-     * @param clock
+     * @param clock the current clock
      */
     public void setTotalSystemTime(Double clock) {
 
@@ -83,23 +89,37 @@ public class Customer {
     /**
      * Stores the customer arrival time in the system for the current simulation
      * 
-     * @param currentLoop
-     * @param clock
+     * @param clock the current clock
      */
     public void setArrivalTime(double clock) {
         this.arrivalTime = clock;
 
     }
 
-    public void setInterArrivalValue(Double ia) {
-        interArrivalValues.add(ia);
+    /**
+     * Store the random generated interarrival value
+     * 
+     * @param ia the interarrival value
+     */
+    public void setInterArrivalValue(double ia) {
+        interArrivalValues = ia;
     }
 
     // getters
-    public LinkedList<Double> getInterArrivalValues(Double ia) {
+    /**
+     * Get inter arrival value for this event
+     * 
+     * @return the interarrival value for this event
+     */
+    public double getInterArrivalValues() {
         return interArrivalValues;
     }
 
+    /**
+     * Get the server number that is processing the service
+     * 
+     * @return server number processing the service
+     */
     public int getServerIndex() {
         return serverIndex;
     }
@@ -107,34 +127,34 @@ public class Customer {
     /**
      * Customer ID
      * 
-     * @return
+     * @return Customer ID
      */
     public int getId() {
         return id;
     }
 
     /**
-     * The average waiting time for all simulations
+     * The waiting time for this simulation
      * 
-     * @return
+     * @return waitingTime
      */
     public double getWaitingTime() {
         return waitingTime;
     }
 
     /**
-     * The average total system time for all simulations
+     * The total system time for this simulation
      * 
-     * @return
+     * @return totalSystemTime
      */
     public double getTotalSystemTime() {
         return totalSystemTime;
     }
 
     @Override
-    /**
-     * String representation of customer
-     */
+   /**
+    * @return customer string
+    */
     public String toString() {
         /*
          * totalSystemTime = totalSystemTimeMultiple / numCurrentLoop; waitingTime =

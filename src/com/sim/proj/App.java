@@ -5,32 +5,93 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Main class for Bank Queuing Simulation with New Realities project
+ * University of Ottawa CSI 4124 group 4 fall 2021.
+ * Group Members and Student IDs:
+ * ● Samuel Garneau (2380248)
+ * ● Chengen Lyu (300028734)
+ * ● Jahesh Davodra (300018359)
+ * ● Le Nguyen (300013304)
+ * ● Luke Germond (300014113)
+ * 
+ */
 class App {
-    public static final String TEXT_RESET = "\u001B[0m";
-    public static final String TEXT_GREEN = "\u001B[32m";
-
-    private Multiserver multiserver = null;
-    private Multiqueue multiqueue = null;
-    // data structure to store result
-    private ArrayList<Results> multiServerResults;
-    private ArrayList<Results> multiQueueResults;
-
-    private int maxExecution = 5; // default value
-    private int maxQueueSize = 2; // default value
-    private double meanDivider = 1; // default value
-    private final int MEAN_SERVICE_TIME = 150; // constant
-    private final int SIGMA_SERVICE_TIME = 80; // constant
-    private final double MAX_CLOCK = 28800; // constant
-    private final int MAX_LOOP = 500; // constant
-    private final int SERVER_START_NUM = 1; // constant
-    private String[] arguments;
-    private NumberFormat formatter = new DecimalFormat("#0.00");
 
     /**
-     * Main static function 3 arguments [0]= max queue size; [1] = mean divider ;
-     * [2] maxExecution trials will work with default value 2,1,5
+     * text color reset white
+     */
+    private static final String TEXT_RESET = "\u001B[0m";
+    /**
+     * text color green
+     */
+    private static final String TEXT_GREEN = "\u001B[32m";
+    /**
+     * Output formatter
+     */
+    private NumberFormat formatter = new DecimalFormat("#0.00");
+    /**
+     * multiserver simulation instance
+     */
+    private Multiserver multiserver = null;
+    /**
+     * multiqueue simulation instance
+     */
+    private Multiqueue multiqueue = null;
+    /**
+     * List to store the multiserver simulation results at each execution
+     */
+    private ArrayList<Results> multiServerResults;
+    /**
+     * List to store the multiqueue simulation results at each execution
+     */
+    private ArrayList<Results> multiQueueResults;
+
+    /**
+     * The max number of execution with different server numbers
+     */
+    private int maxExecution = 5; // default value
+    /**
+     * The max number of customer allowed in the waiting line at the same time (New
+     * Realities)
+     */
+    private int maxQueueSize = 2; // default value
+    /**
+     * The mean divider which is used to produce diffrent values from reference
+     * document
+     * with 1.0 value it will simulate using the same datas as the
+     * reference document
+     */
+    private double meanDivider = 1; // default value
+    /**
+     * Constant for average service time
+     */
+    private final int MEAN_SERVICE_TIME = 150;
+    /**
+     * Constant for average service time sigma
+     */
+    private final int SIGMA_SERVICE_TIME = 80;
+    /**
+     * Constant for workday duration in seconds
+     */
+    private final double MAX_CLOCK = 28800;
+    /**
+     * Constant for max number of execution (Replications)
+     */
+    private final int MAX_LOOP = 500;
+    /**
+     * Constant for number of server to start trial with
+     */
+    private final int SERVER_START_NUM = 1;
+    /**
+     * Startup input arguments array
+     */
+    private String[] arguments;
+
+    /**
+     * Main static function for project start
      * 
-     * @param args
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=meanDivider;
      */
     public static void main(String[] args) {
 
@@ -38,7 +99,11 @@ class App {
 
     }
 
-    // constructor
+    /**
+     * Constructor
+     * 
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=meanDivider;
+     */
     private App(String[] args) {
         arguments = args;
         multiQueueResults = new ArrayList<Results>();
@@ -48,6 +113,11 @@ class App {
 
     }
 
+    /**
+     * Main execution function,
+     * will execute all the simulations trials with different parameters
+     * stops when it reachs maxExecution
+     */
     private void runSims() {
 
         var args = new String[6];
@@ -61,7 +131,6 @@ class App {
         args[1] = String.valueOf(MAX_CLOCK); // #max clock
         args[2] = String.valueOf(MEAN_SERVICE_TIME); // # mean service
         args[3] = String.valueOf(SIGMA_SERVICE_TIME); // # sigma service
-
         args[5] = String.valueOf(meanDivider); // #mean divider
 
         // loops through both kind of simulation and trying different number of servers
@@ -79,23 +148,22 @@ class App {
         }
 
         // printing results for all trials
+        // finding optimal parameters based on maxQueueSize
         try {
             printMultiServerResults();
             computeMultiserverOptimal();
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        try {
             printMultiQueueResults();
             computeMultiqueueOptimal();
         } catch (Exception e) {
-            // TODO: handle exception
-        }
 
-        // finding optimal parameters based on maxQueueSize
+        }
 
     }
 
+    /**
+     * Find the optimal number of server based on max customer waiting in line
+     * parameter
+     */
     private void computeMultiqueueOptimal() {
 
         // find lowest cost within restriction
@@ -126,6 +194,10 @@ class App {
         }
     }
 
+    /**
+     * Find the optimal number of server based on max customer waiting in line
+     * parameter
+     */
     private void computeMultiserverOptimal() {
 
         // find lowest cost within restriction
@@ -156,12 +228,15 @@ class App {
         }
     }
 
+    /**
+     * loops through all the results and call print function
+     */
     private void printMultiServerResults() {
         System.out.println();
         System.out.println(TEXT_GREEN + "Printing multiserver results..." + TEXT_RESET);
         if (multiServerResults.size() > 0) {
             for (Results rst : multiServerResults) {
-                
+
                 System.out.println();
 
                 printReport(rst.getResults());
@@ -171,6 +246,9 @@ class App {
 
     }
 
+    /**
+     * loops through all the results and call print function
+     */
     private void printMultiQueueResults() {
         System.out.println();
         System.out.println(TEXT_GREEN + "Printing multiqueue results..." + TEXT_RESET);
@@ -187,6 +265,8 @@ class App {
 
     /**
      * Computes, saves and displays the results obtained from the simulations
+     * 
+     * @param results the hashmap to print
      */
     private void printReport(HashMap<String, Double> results) {
 
@@ -252,7 +332,14 @@ class App {
  */
 enum State {
 
-    IDLE, BUSY;
+    /**
+     * Server state idle
+     */
+    IDLE,
+    /**
+     * Server state busy
+     */
+    BUSY;
 
 };
 
@@ -261,5 +348,12 @@ enum State {
  */
 enum EventType {
 
-    ARRIVAL, DEPARTURE
+    /**
+     * Event type Arrival
+     */
+    ARRIVAL,
+    /**
+     * Event type Departure
+     */
+    DEPARTURE
 };

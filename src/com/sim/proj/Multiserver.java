@@ -17,99 +17,146 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
  * @version 1.0
  */
 public class Multiserver {
-    public static final String TEXT_RESET = "\u001B[0m";
-    public static final String TEXT_GREEN = "\u001B[32m";
+
+    /**
+     * text color reset white
+     */
+    private static final String TEXT_RESET = "\u001B[0m";
+    /**
+     * text color green
+     */
+    private static final String TEXT_GREEN = "\u001B[32m";
+
     /**
      * List of customers to go through simulation
      */
     private ArrayList<Customer> customers = null;
 
+    /**
+     * The number of servers of the simulation
+     */
     private int numServer = 0;
 
     /**
-     * Stores the max number of execution of the simulation
+     * The max number of execution of the simulation
      */
     private int numMaxLoop = 0;
 
     /**
-     * Stores the current loop execution
+     * The current loop execution
      */
     private int currentLoop = 1;
 
+    /**
+     * The total number of customers who have been processed as departure
+     */
     private int numCustomersServed = 0;
+    /**
+     * The total number of customers who have been processed as arrival
+     */
     private int numCustomersArrived = 0;
 
     /**
-     * Stores the event clock for the current simulation
+     * The event clock for the current simulation
      */
     private double clock = 0;
+
+    /**
+     * The total event clock for the all simulations
+     */
     private double totalClock = 0;
 
     /**
-     * Stores the max waiting time for all customers and simulations
+     * The max waiting time for all customers and simulations
      */
     private double maxWaitingTime = 0;
 
     /**
-     * Stores the total time the server was busy for all customers and simulations
+     * The total time the server was busy for all customers and simulations
      */
     private double[] totalServerTime;
 
     /**
-     * Stores the desired service time mean for the simulations
+     * The desired service time mean for the simulations
      */
     private double meanS = 0;
 
     /**
-     * Stores the desired service time mean standart variation for the simulations
+     * The desired service time mean standart variation for the simulations
      */
     private double sigmaS = 0;
 
     /**
-     * Stores the single server status either IDLE or BUSY
+     * The single server status either IDLE or BUSY
      */
     private State[] serverStatus;
 
     /**
-     * Stores the customers waiting in line for service during a simulation
+     * The customers waiting in line for service during a simulation
      */
     private CustomerQueue customersQ = null;
 
     /**
-     * Stores the current event being processed
+     * The current event being processed
      */
     private Event event = null;
 
     /**
-     * Stores the list of all future events for a simulation auto-sorted based on
+     * The list of all future events for a simulation auto-sorted based on
      * event time
      */
     private LinkedList<Event> eventList = null;
 
+    /**
+     * The random generator for the servers choice
+     */
     private Random rdm = new Random();
     /**
-     * Stores the random generator for the service time for all simulations
+     * The random generator for the service time for all simulations
      */
     private Random rdmS = null;
 
     /**
-     * Stores the start time clock to compute execution time in millis
+     * The max execution time (workday)
      */
-
     private double maxClock = 0;
 
+    /**
+     * The mean divider which is used to produce diffrent values from reference
+     * document
+     * with 1.0 value it will simulate using the same datas as the
+     * reference document
+     */
     private double meanDivider = 2.0; // default value
 
+    /**
+     * The simulation executions results
+     */
     private Results results = null;
-    private final double SERVER_RATE = 320.0;
-    private final double Z = 0.7088;//from normal table
 
+    /**
+     * The server daily unit cost in $/day/server
+     */
+    private final double SERVER_RATE = 320.0;
+
+    /**
+     * The Z value use to compute confidence interval
+     */
+    private final double Z = 0.7088;// from normal table
+
+    /**
+     * Constructor
+     */
     public Multiserver() {
 
     }
 
     /**
-     * Run simulation method
+     * Run simulation main method,
+     * 
+     * 
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=meanDivider;
+     * @return results
      */
     public Results runSim(String[] args) {
         // retrieve config and create customers
@@ -149,9 +196,9 @@ public class Multiserver {
 
             // record stats for customers who did not get served during work day
             while (!customersQ.isEmpty()) {
-                var c = customersQ.dequeue();
-                c.getCustomer().setWaitingTime(clock);
-                c.getCustomer().setTotalSystemTime(clock);
+                var c = customersQ.dequeue().getCustomer();
+                c.setWaitingTime(clock);
+                c.setTotalSystemTime(clock);
             }
 
             // compute avg results for this execution
@@ -169,9 +216,10 @@ public class Multiserver {
         return storeResults();
     }
 
-    /**
-     * Retrieves the configs initialyze objects
-     */
+  /**
+   * Retrieves the configs initialyze objects
+   * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=meanDivider;
+   */
     private void initialize(String[] args) {
 
         // initalize parameters variables
@@ -233,17 +281,16 @@ public class Multiserver {
      * generate next interarrival time based on poisson distribution and time of day
      * function
      * 
-     * @param time
-     * @return
+     * @param time current time
+     * @return a new ramdomly generated value
      */
     private double generateNextIA(double time) {
 
+        //compute mean according to quadractic equation based on time of day
         var mean = (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
-
-        // System.out.println("Poisson Distribution");
-
+  
         var pd = new PoissonDistribution(mean / meanDivider);
-        var ret = pd.sample();
+        var ret = Math.abs(pd.sample());
         // System.out.println("Random value " + ret);
 
         return ret;
@@ -272,6 +319,7 @@ public class Multiserver {
         // System.out.println("Processing arrival - number of servers at idle " +
         // idleServers.size());
 
+        // if any idle server pick one else wait in line
         if (!idleServers.isEmpty()) {
             // System.out.println("Processing arrival idleServers.contains(s.length - 1) "
             // + idleServers.containsKey(s.length - 1) + " " + idleServers.size());
@@ -297,13 +345,16 @@ public class Multiserver {
             // schedule departure event
 
             double nextS = Math.abs(rdmS.nextGaussian() * sigmaS + meanS);
-            totalServerTime[index] += (nextS);
+            // compile server busy time
+            totalServerTime[index] += nextS;
+            // add departure event
             eventList.add(new Event(EventType.DEPARTURE, nextS + event.getTime(), c));
             sort();
 
         } else {
             // System.out.println("Processing arrival customer id " + c.getId() + " at " +
             // clock + " enqueued");
+            // add to waiting line
             customersQ.enqueue(event);
         }
 
@@ -311,8 +362,7 @@ public class Multiserver {
 
     /**
      * Records departure time, if any customer is waiting then create new departure
-     * event and record waiting time, otherwise set the server status to IDLE and
-     * record server busy time
+     * event and record waiting time, otherwise set the server status to IDLE
      */
     private void processDeparture() {
 
@@ -326,7 +376,7 @@ public class Multiserver {
 
         // check if any customer are waiting in line
         if (customersQ.isEmpty()) {
-            // update server status and record server busy time
+            // update server status
             serverStatus[serverIndex] = State.IDLE;
 
         } else {
@@ -347,7 +397,7 @@ public class Multiserver {
             // schedule departure event
 
             double nextS = Math.abs(rdmS.nextGaussian() * sigmaS + meanS);
-            totalServerTime[serverIndex] += (nextS);
+            totalServerTime[serverIndex] += nextS;
             eventList.add(new Event(EventType.DEPARTURE, nextS + clock, c));
             sort();
 
@@ -369,9 +419,12 @@ public class Multiserver {
 
         };
 
-        Collections.sort(eventList, compareByTime);
+        Collections.sort(eventList, compareByTime); // uses TimSort
     }
 
+    /**
+     * Compute and store simulation results for a single execution in results Object
+     */
     private void storeExecutionResults() {
         // compute avg waiting and system time
         var waitingAcc = 0.0;
@@ -402,14 +455,21 @@ public class Multiserver {
         results.addSystemTimeAvgVar(systemTimeAvgVar);
     }
 
+    /**
+     * Computes and the simulation executions results in Results object
+     * 
+     * @return results
+     */
     private Results storeResults() {
 
         double servers = (double) numServer;
         double maxloop = (double) numMaxLoop;
         double numcust = (double) numCustomersServed / maxloop;
 
-        var avgStats = getExecutionsStats(); // [0]=waitingTime;[1]=waitingTimeVar;[2]avgWaitingTime;[3]avgWaitingTimeVar;[4]=systemTime;[5]=systemTimeVar;[6]avgSystemTime;[7]avgSystemTimeVar;[8]confidenceInterval
+        // compute the results
+        var avgStats = getExecutionsStats(); // [0]=waitingTime;[1]=waitingTimeVar;[2]avgWaitingTime;[3]avgWaitingTimeVar;[4]=systemTime;[5]=systemTimeVar;[6]avgSystemTime;[7]avgSystemTimeVar;[8]waitingconfidenceInterval;[9]systemconfidenceInterval
 
+        // store the results
         results.addResult("custArrived", (double) numCustomersArrived / maxloop);
         results.addResult("maxQueue", (double) customersQ.getMaxQS());
         results.addResult("custServed", numcust);
@@ -432,25 +492,30 @@ public class Multiserver {
         results.addResult("systemTimeH", avgStats[9]);
         results.addResult("meanDivider", meanDivider);
 
-        // compute server busy pourcentage
+        // compute server busy time and pourcentage
         for (int i = 0; i < numServer; i++) {
 
             var key = "timeServer" + i;
             var value = totalServerTime[i] / maxloop;
             results.addResult(key, value);
-            value = 100 * totalServerTime[i] / totalClock;
+            value = 100.0 * totalServerTime[i] / totalClock;
             results.addResult(key + "%", value);
 
         }
-
-        return results;
         // adds the results to output class so its available for comparing
+        return results;
 
     }
 
+    /**
+     * computes all the results from simulation executions
+     * 
+     * @return avgStats
+     */
     private double[] getExecutionsStats() {
         var maxloop = (double) numMaxLoop;
         var cust = (double) numCustomersArrived / maxloop;
+        // ret[0]=waitingTime;[1]=waitingTimeVar;[2]avgWaitingTime;[3]avgWaitingTimeVar;[4]=systemTime;[5]=systemTimeVar;[6]avgSystemTime;[7]avgSystemTimeVar;[8]waitingconfidenceInterval;[9]systemconfidenceInterval
         double[] ret = new double[10];
         // init array
         for (int i = 0; i < ret.length; i++) {
@@ -481,16 +546,16 @@ public class Multiserver {
 
         // compute total system time variance
         for (double avgsyst : results.getSystemTime()) {
-            
+
             ret[5] += Math.pow(avgsyst - ret[4], 2);
         }
-        ret[5] =  ret[5] / (maxloop - 1);
+        ret[5] = ret[5] / (maxloop - 1);
 
         // compute avg system time and variance per customers
         ret[6] = ret[4] / cust;
         ret[7] = ret[5] / cust;
 
-        // compute confidence interval    
+        // compute confidence interval
         ret[8] = Z * Math.sqrt(ret[1]) / Math.sqrt(maxloop);
         ret[9] = Z * Math.sqrt(ret[5]) / Math.sqrt(maxloop);
 

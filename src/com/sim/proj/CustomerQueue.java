@@ -21,8 +21,6 @@ class CustomerQueue {
 
     /**
      * Constructor
-     * 
-     * @param name
      */
     public CustomerQueue() {
 
@@ -33,11 +31,11 @@ class CustomerQueue {
     /**
      * Adds a customer in the waiting line
      * 
-     * @param c
+     * @param e the arrival event to add in waiting line
      */
-    public void enqueue(Event c) {
+    public void enqueue(Event e) {
 
-        queue.add(c);
+        queue.add(e);
         if (queue.size() > maxQueueSize) {
             maxQueueSize = queue.size();
         }
@@ -47,7 +45,7 @@ class CustomerQueue {
     /**
      * Retrieve customer in waiting line
      * 
-     * @return event
+     * @return the customer in waiting line
      */
     public Event dequeue() {
 
@@ -58,7 +56,7 @@ class CustomerQueue {
     /**
      * Check whether a customer is waiting in line
      * 
-     * @return bool
+     * @return true if the waiting line is empty
      */
     public boolean isEmpty() {
         return queue.size() == 0;
@@ -67,7 +65,7 @@ class CustomerQueue {
     /**
      * Return the max number of customer waiting in line
      * 
-     * @return maxQueueSize
+     * @return the max number of customer waiting in line
      */
     public int getMaxQS() {
         return maxQueueSize;
