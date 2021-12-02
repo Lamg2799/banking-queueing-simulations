@@ -1,6 +1,5 @@
 package com.sim.proj;
 
-import java.util.LinkedList;
 
 /**
  * Class Customer to record waiting and total system time during the simulation
