@@ -17,7 +17,7 @@ echo "Starting Multiserver"
 echo "Compiling..."
 echo "Compiling...Done"
 
-cd "$localpath/src$srcpath" && javac -classpath .:"$localpath"/lib/*:. -d "$localpath"/bin ./*.java
+cd "$localpath/src$srcpath" && javac -classpath .:"$localpath"/lib/commons-math3-3.6.1-sources.jar:. -d "$localpath"/bin ./*.java
 
 echo "Exporting jar..."
 
