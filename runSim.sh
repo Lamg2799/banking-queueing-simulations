@@ -21,7 +21,7 @@ cd "$localpath/src$srcpath" && javac -classpath .:"$localpath"/lib/commons-math3
 
 echo "Exporting jar..."
 
-cd "$localpath"/bin && jar cfe ../multiserver.jar  $mainclass ."$srcpath" ."$libpath"
+cd "$localpath"/bin && jar cfe ../multiserver.jar  $mainclass ./*
 
 echo "Exporting jar...Done"
 echo "Starting Simulation..."
