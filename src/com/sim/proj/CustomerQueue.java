@@ -63,6 +63,17 @@ class CustomerQueue {
     }
 
     /**
+     * Get the number of customers currently in the queue
+     * 
+     * @return The number of customers in the queue
+     */
+    public int numCustomers() {
+        return queue.size();
+    }
+
+
+
+    /**
      * Return the max number of customer waiting in line
      * 
      * @return the max number of customer waiting in line
