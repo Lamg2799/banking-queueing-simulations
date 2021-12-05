@@ -33,7 +33,7 @@ public class Multiserver {
     private ArrayList<Customer> customers = null;
 
     /**
-     * The number of servers of the simulation
+     * The total number of servers of the simulation
      */
     private int numServer = 0;
 
@@ -72,29 +72,54 @@ public class Multiserver {
     private double maxWaitingTime = 0;
 
     /**
-     * The total time the server was busy for all customers and simulations
+     * The desired primary server service time mean for the simulations
      */
-    private double[] totalServerTime;
+    private double meanPrimaryS = 0;
 
     /**
-     * The desired service time mean for the simulations
+     * The desired primary server service time mean standart variation for the simulations
      */
-    private double meanS = 0;
+    private double sigmaPrimaryS = 0;
 
     /**
-     * The desired service time mean standart variation for the simulations
+     * The desired experienced server service time mean for the simulations
      */
-    private double sigmaS = 0;
+    private double meanExperiencedS = 0;
 
     /**
-     * The single server status either IDLE or BUSY
+     * The desired experienced server service time mean standart variation for the simulations
      */
-    private State[] serverStatus;
+    private double sigmaExperiencedS = 0;
+
+    /**
+     * The daily pay (8 hours) for a primary server
+     */
+    private double dailyPayPrimary = 0;
+
+    /**
+     * The daily pay (8 hours) for an experienced server
+     */
+    private double dailyPayExperienced = 0;
+
+    /**
+     * The number of primary servers in the simulation
+     */
+    private int numPrimary = 0;
+
+    /**
+     * The number of experienced servers in the simulation
+     */
+    private int numExperienced = 0;
 
     /**
      * The customers waiting in line for service during a simulation
      */
     private CustomerQueue customersQ = null;
+
+    /**
+     * The servers that serve the customers during a simulation
+     */
+    private Server[] servers = null;
 
     /**
      * The current event being processed
@@ -127,7 +152,7 @@ public class Multiserver {
      * with 1.0 value it will simulate using the same datas as the
      * reference document
      */
-    private double meanDivider = 2.0; // default value
+    private double meanDivider = 1.0; // default value
 
     /**
      * The simulation executions results
@@ -135,27 +160,15 @@ public class Multiserver {
     private Results results = null;
 
     /**
-     * The server daily unit cost in $/day/server
-     */
-    private final double SERVER_RATE = 320.0;
-
-    /**
      * The Z value use to compute confidence interval
      */
     private final double Z = 0.7088;// from normal table
 
     /**
-     * Constructor
-     */
-    public Multiserver() {
-
-    }
-
-    /**
      * Run simulation main method,
      * 
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=meanDivider;
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanDivider;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiencedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
      * @return results
      */
     public Results runSim(String[] args) {
@@ -165,7 +178,7 @@ public class Multiserver {
         // Starts simulation
         System.out.println();
         System.out.print(
-                TEXT_GREEN + "Running " + numMaxLoop + " multiserver simulations with " + args[4] + " servers...");
+            TEXT_GREEN + "Running " + numMaxLoop + " multiserver simulations with " + args[3] + " primary servers and " + args[4] + " experienced servers... ");
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -218,22 +231,34 @@ public class Multiserver {
 
   /**
    * Retrieves the configs initialyze objects
-   * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=meanDivider;
+   * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanDivider;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiencedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
    */
     private void initialize(String[] args) {
 
         // initalize parameters variables
         numMaxLoop = Integer.parseInt(args[0]);
         maxClock = Double.parseDouble(args[1]);
-        meanS = Integer.parseInt(args[2]);
-        sigmaS = Integer.parseInt(args[3]);
-        numServer = Integer.parseInt(args[4]);
-        meanDivider = Double.parseDouble(args[5]);
+        meanDivider = Integer.parseInt(args[2]);
+        numPrimary = Integer.parseInt(args[3]);
+        numExperienced = Integer.parseInt(args[4]);
+        meanPrimaryS = Integer.parseInt(args[5]);
+        sigmaPrimaryS = Integer.parseInt(args[6]);
+        meanExperiencedS = Integer.parseInt(args[7]);
+        sigmaExperiencedS = Integer.parseInt(args[8]);
+        dailyPayPrimary = Integer.parseInt(args[9]);
+        dailyPayExperienced = Integer.parseInt(args[10]);
+
         numCustomersServed = 0;
         rdmS = new Random();
-        totalServerTime = new double[numServer];
-        serverStatus = new State[numServer];
+        numServer = numPrimary + numExperienced;
         customersQ = new CustomerQueue();
+        servers = new Server[numServer];
+        for (int i=0; i < numPrimary; i++) {
+            servers[i] = new Server(meanPrimaryS, sigmaPrimaryS, dailyPayPrimary, ServerType.PRIMARY);
+        }
+        for (int i=numPrimary; i < (numPrimary+numExperienced); i++) {
+            servers[i] = new Server(meanExperiencedS, sigmaExperiencedS, dailyPayExperienced, ServerType.EXPERIENCED);
+        }
         results = new Results();
     }
 
@@ -247,9 +272,8 @@ public class Multiserver {
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
 
-        for (int i = 0; i < serverStatus.length; i++) {
-
-            serverStatus[i] = State.IDLE;
+        for (int i = 0; i < servers.length; i++) {
+            servers[i].setStatus(Status.IDLE);
         }
 
         // generating InterArrival Events depending max time (8hr)
@@ -307,14 +331,10 @@ public class Multiserver {
         c.setArrivalTime(clock);
         // check if any server idle
         Map<Integer, Integer> idleServers = new HashMap<Integer, Integer>();
-        var s = serverStatus;
-        for (int i = 0; i < s.length; i++) {
-
-            if (s[i] == State.IDLE) {
-
+        for (int i = 0; i < servers.length; i++) {
+            if (servers[i].getStatus() == Status.IDLE) {
                 idleServers.put(i, i);
             }
-
         }
         // System.out.println("Processing arrival - number of servers at idle " +
         // idleServers.size());
@@ -325,8 +345,8 @@ public class Multiserver {
             // + idleServers.containsKey(s.length - 1) + " " + idleServers.size());
             int index = 0;
 
-            if (idleServers.containsKey(s.length - 1) && idleServers.size() > 1) {
-                idleServers.remove(s.length - 1);
+            if (idleServers.containsKey(servers.length - 1) && idleServers.size() > 1) {
+                idleServers.remove(servers.length - 1);
             }
             var indexpick = 0;
             if (idleServers.size() > 1) {
@@ -337,16 +357,14 @@ public class Multiserver {
             var keyset = idleServers.keySet();
             var arr = keyset.toArray();
             index = (Integer) arr[indexpick];
+            Server currentServer = servers[index];
             // set server busy
-            serverStatus[index] = State.BUSY;
-            // System.out.println("Processing arrival customer id " + c.getId() + " at " +
-            // clock[currentLoop] + " server #: " + index);
+            currentServer.setStatus(Status.BUSY);
             c.setServerIndex(index);
             // schedule departure event
-
-            double nextS = Math.abs(rdmS.nextGaussian() * sigmaS + meanS);
+            double nextS = Math.abs(rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
             // compile server busy time
-            totalServerTime[index] += nextS;
+            currentServer.addToTotalServiceTime(nextS);
             // add departure event
             eventList.add(new Event(EventType.DEPARTURE, nextS + event.getTime(), c));
             sort();
@@ -369,15 +387,15 @@ public class Multiserver {
         numCustomersServed++;
         var c = event.getCustomer();
         int serverIndex = c.getServerIndex();
-        // System.out.println("Processing depart customer id " + c.getId() + " at " +
-        // clock + " server # " + serverIndex);
+        Server currentServer = servers[serverIndex];
+
         // record customer system time
         c.setTotalSystemTime(clock);
 
         // check if any customer are waiting in line
         if (customersQ.isEmpty()) {
             // update server status
-            serverStatus[serverIndex] = State.IDLE;
+            currentServer.setStatus(Status.IDLE);
 
         } else {
 
@@ -396,8 +414,8 @@ public class Multiserver {
 
             // schedule departure event
 
-            double nextS = Math.abs(rdmS.nextGaussian() * sigmaS + meanS);
-            totalServerTime[serverIndex] += nextS;
+            double nextS = Math.abs(rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
+            currentServer.addToTotalServiceTime(nextS);
             eventList.add(new Event(EventType.DEPARTURE, nextS + clock, c));
             sort();
 
@@ -462,22 +480,29 @@ public class Multiserver {
      */
     private Results storeResults() {
 
-        double servers = (double) numServer;
+        double numPrimaryServers = (double) numPrimary;
+        double numExperiencedServers = (double) numExperienced;
         double maxloop = (double) numMaxLoop;
         double numcust = (double) numCustomersServed / maxloop;
 
         // compute the results
         var avgStats = getExecutionsStats(); // [0]=waitingTime;[1]=waitingTimeVar;[2]avgWaitingTime;[3]avgWaitingTimeVar;[4]=systemTime;[5]=systemTimeVar;[6]avgSystemTime;[7]avgSystemTimeVar;[8]waitingconfidenceInterval;[9]systemconfidenceInterval
 
+        int totalCost = 0;
+        for (int i=0; i < servers.length; i++) {
+            totalCost += servers[i].getDailyPay();
+        }
+
         // store the results
         results.addResult("custArrived", (double) numCustomersArrived / maxloop);
         results.addResult("maxQueue", (double) customersQ.getMaxQS());
         results.addResult("custServed", numcust);
-        results.addResult("numServers", servers);
+        results.addResult("numPrimaryServers", numPrimaryServers);
+        results.addResult("numExperiencedServers", numExperiencedServers);
         results.addResult("loopDone", maxloop);
         results.addResult("typeServers", 1.0);
-        results.addResult("totalCost", (double) numServer * SERVER_RATE);
-        results.addResult("costPerCustomer", servers * SERVER_RATE / numcust);
+        results.addResult("totalCost", (double) totalCost);
+        results.addResult("costPerCustomer", totalCost / numcust);
         results.addResult("finalClock", totalClock / maxloop);
         results.addResult("waitingTime", avgStats[0]); // avg per executions
         results.addResult("waitingTimeVar", avgStats[1]); // avg variance per executions
@@ -496,9 +521,10 @@ public class Multiserver {
         for (int i = 0; i < numServer; i++) {
 
             var key = "timeServer" + i;
-            var value = totalServerTime[i] / maxloop;
+            var totalTime = servers[i].getTotalTime();
+            var value = totalTime / maxloop;
             results.addResult(key, value);
-            value = 100.0 * totalServerTime[i] / totalClock;
+            value = 100.0 * totalTime / totalClock;
             results.addResult(key + "%", value);
 
         }
