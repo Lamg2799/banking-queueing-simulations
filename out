@@ -1,0 +1,28 @@
+
+[32mRunning 1000 multiserver simulations with 1 servers...Done[0m
+
+[32mPrinting multiserver results...[0m
+
+
+Server types 1.0
+Results with 1 servers
+Customers arrived = 118
+Customers served = 117 Customers served % 99.00
+Mean divider = 1.0
+Total cost of server = 320.00 $ per day
+Total cost of server per customer served= 2.73 $ per customer served
+Num loop done: 1000
+Final clock (min): 483.02
+Total waiting time average per executions (?) (min): 1311.10; Total waiting time average variance per executions (S^2) : 218458.03; average per executions per customers (?) (min): 11.10; average variance per executions per customers (S^2) : 1849.46; Max waiting time (min): 67.40
+Wainting time confidence interval (min): 10.48
+Total system time average per executions (?) (min): 1608.42; Total system time average variance per executions (S^2): 228124.73; average per executions per customers (?) (min): 13.62; average variance per executions per customers (S^2) : 1931.30
+System time confidence interval (min): 10.71
+Total time Server #: 0 was Busy (min): 299.13; (%):  61.93
+Max customers waiting in line: 24
+
+[32mFinding optimal result for multiserver...[0m
+
+[32mPrinting multiqueue results...[0m
+
+
+Server types null

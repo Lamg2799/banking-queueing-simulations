@@ -64,13 +64,29 @@ class App {
      */
     private double MEAN_DIVIDER = 1; // default value
     /**
-     * Constant for average service time
+     * Constant for average service time for primary server
      */
-    private final int MEAN_SERVICE_TIME = 150;
+    private final int MEAN_PRIMARY_SERVICE_TIME = 150;
     /**
-     * Constant for average service time sigma
+     * Constant for average service time sigma for primary server
      */
-    private final int SIGMA_SERVICE_TIME = 80;
+    final int SIGMA_PRIMARY_SERVICE_TIME = 80;
+    /**
+     * Constant for average service time for experienced server
+     */
+    private final int MEAN_EXPERIENCED_SERVICE_TIME = 150;
+    /**
+     * Constant for average service time sigma for experienced server
+     */
+    final int SIGMA_EXPERIENCED_SERVICE_TIME = 80;
+    /**
+     * Constant for daily pay for primary servers
+     */
+    final int DAILY_PAY_PRIMARY = 320;
+    /**
+     * Constant for daily pay for experienced servers
+     */
+    final int DAILY_PAY_EXPERIENCED = 320;
     /**
      * Constant for workday duration in seconds
      */
@@ -91,8 +107,7 @@ class App {
     /**
      * Main static function for project start
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=MEAN_DIVIDER;
-     */
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
     public static void main(String[] args) {
 
         new App(args);
@@ -102,7 +117,7 @@ class App {
     /**
      * Constructor
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=MEAN_DIVIDER;
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
      */
     private App(String[] args) {
         arguments = args;
@@ -120,7 +135,7 @@ class App {
      */
     private void runSims() {
 
-        var args = new String[6];
+        var args = new String[11];
         // check if arguments are received or else use default values
         if (arguments != null && arguments.length == 3) {
             MAX_QUEUE_SIZE = Integer.parseInt(arguments[0]);
@@ -129,15 +144,35 @@ class App {
         }
         args[0] = String.valueOf(MAX_LOOP);// # num execution should be set to 500
         args[1] = String.valueOf(MAX_CLOCK); // #max clock
-        args[2] = String.valueOf(MEAN_SERVICE_TIME); // # mean service
-        args[3] = String.valueOf(SIGMA_SERVICE_TIME); // # sigma service
-        args[5] = String.valueOf(MEAN_DIVIDER); // #mean divider
+        args[2] = String.valueOf((int) MEAN_DIVIDER); // #mean divider
+        args[5] = String.valueOf(MEAN_PRIMARY_SERVICE_TIME); // # mean service for primary
+        args[6] = String.valueOf(SIGMA_PRIMARY_SERVICE_TIME); // # sigma service for primary
+        args[7] = String.valueOf(MEAN_EXPERIENCED_SERVICE_TIME); // # mean service for experienced
+        args[8] = String.valueOf(SIGMA_EXPERIENCED_SERVICE_TIME); // # sigma service for experienced
+        args[9] = String.valueOf(DAILY_PAY_PRIMARY); // # daily pay for primary
+        args[10] = String.valueOf(DAILY_PAY_EXPERIENCED); // # daily pay for experienced
 
-        // loops through both kind of simulation and trying different number of servers
+        // TESTS WITH ALL SERVER COMBINATIONS EXCEPT ONLY EXPERIENCED
+        for (int primaryServerNum = SERVER_START_NUM; primaryServerNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; primaryServerNum++) {
+            for (int experiencedServerNum = 0; experiencedServerNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; experiencedServerNum++) {
+                multiserver = new Multiserver();
+                multiqueue = new Multiqueue();
+                args[3] = String.valueOf(primaryServerNum); // # number of primary server
+                args[4] = String.valueOf(experiencedServerNum); // # number of experienced server
+
+                // run multiserver sim
+                multiServerResults.add(multiserver.runSim(args));
+
+                // run multiqueue sim
+                multiQueueResults.add(multiqueue.runSim(args));
+            }
+        }
+        // TESTS WITH ONLY EXPERIENCED SERVERS
         for (int serverNum = SERVER_START_NUM; serverNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; serverNum++) {
             multiserver = new Multiserver();
             multiqueue = new Multiqueue();
-            args[4] = String.valueOf(serverNum); // # number of server
+            args[3] = "0"; // # number of primary servers
+            args[4] = String.valueOf(serverNum);; // number of experienced servers
 
             // run multiserver sim
             multiServerResults.add(multiserver.runSim(args));
@@ -146,6 +181,8 @@ class App {
             multiQueueResults.add(multiqueue.runSim(args));
 
         }
+
+
 
         // printing results for all trials
         // finding optimal parameters based on MAX_QUEUE_SIZE
@@ -169,30 +206,33 @@ class App {
         // find lowest cost within restriction
         System.out.println(TEXT_GREEN + "Finding optimal result for multiqueue..." + TEXT_RESET);
         double mincost = Double.MAX_VALUE;
-        double minserver = 0;
+        double minPrimaryServers = 0;
+        double minExperiencedServers = 0;
         double cost = 0;
         if (multiQueueResults.size() > 0) {
             for (Results rst : multiQueueResults) {
                 // retrieve result hashmap
                 var r = rst.getResults();
-
                 var cc = r.get("costPerCustomer");
                 var qsize = r.get("maxQueue");
                 if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
                     mincost = cc;
-                    minserver = r.get("numServers");
+                    minPrimaryServers = r.get("numPrimaryServers");
+                    minExperiencedServers = r.get("numExperiencedServers");
                     cost = r.get("totalCost");
-                } else if(MAX_QUEUE_SIZE < 0) {
+                }else if(MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
-                    minserver = r.get("numServers");
+                    minPrimaryServers = r.get("numPrimaryServers");
+                    minExperiencedServers = r.get("numExperiencedServers");
                     cost = r.get("totalCost");
                 }
 
             }
             if (cost > 0) {
-                System.out.println("The optimal number of server with a mean divider of " + MEAN_DIVIDER
+                System.out.println("The optimal number of servers with a mean divider of " + MEAN_DIVIDER
                         + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiqueue system is "
-                        + (int) minserver + " with a total cost of " + formatter.format(cost)
+                        + (int) minPrimaryServers + " primary servers and " + (int) minExperiencedServers
+                        + " experienced  servers with a total cost of " + formatter.format(cost)
                         + "$ and a cost per customer of " + formatter.format(mincost) + "$");
             }
         }
@@ -207,30 +247,33 @@ class App {
         // find lowest cost within restriction
         System.out.println(TEXT_GREEN + "Finding optimal result for multiserver..." + TEXT_RESET);
         double mincost = Double.MAX_VALUE;
-        double minserver = 0;
+        double minPrimaryServers = 0;
+        double minExperiencedServers = 0;
         double cost = 0;
         if (multiServerResults.size() > 0) {
-            for (Results rst : multiServerResults) {
+            for (Results rst : multiQueueResults) {
                 // retrieve result hashmap
                 var r = rst.getResults();
-
                 var cc = r.get("costPerCustomer");
                 var qsize = r.get("maxQueue");
                 if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
                     mincost = cc;
-                    minserver = r.get("numServers");
+                    minPrimaryServers = r.get("numPrimaryServers");
+                    minExperiencedServers = r.get("numExperiencedServers");
                     cost = r.get("totalCost");
-                } else if(MAX_QUEUE_SIZE < 0) {
+                }else if(MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
-                    minserver = r.get("numServers");
+                    minPrimaryServers = r.get("numPrimaryServers");
+                    minExperiencedServers = r.get("numExperiencedServers");
                     cost = r.get("totalCost");
                 }
 
             }
             if (cost > 0) {
-                System.out.println("The optimal number of server with a mean divider of " + MEAN_DIVIDER
-                        + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiserver system is "
-                        + (int) minserver + " with a total cost of " + formatter.format(cost)
+                System.out.println("The optimal number of servers with a mean divider of " + MEAN_DIVIDER
+                        + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiqueue system is "
+                        + (int) minPrimaryServers + " primary servers and " + (int) minExperiencedServers
+                        + " experienced  servers with a total cost of " + formatter.format(cost)
                         + "$ and a cost per customer of " + formatter.format(mincost) + "$");
             }
         }
@@ -285,7 +328,8 @@ class App {
 
         // Displaying result
         System.out.println("Server types " + results.get("typeServers"));
-        System.out.println("Results with " + formattershort.format(results.get("numServers")) + " servers");
+        System.out.println("Results with " + formattershort.format(results.get("numPrimaryServers")) + " primary servers and "
+            + formattershort.format(results.get("numExperiencedServers")) + " experienced servers");
         System.out.println("Customers arrived = " + Math.round(results.get("custArrived")));
 
         System.out.println(
@@ -323,7 +367,7 @@ class App {
         System.out
                 .println("System time confidence interval (min): " + formatter.format(results.get("systemTimeH") / 60));
 
-        for (int i = 0; i < results.get("numServers"); i++) {
+        for (int i = 0; i < (results.get("numPrimaryServers") + results.get("numExperiencedServers")); i++) {
 
             System.out.println("Total time Server #: " + i + " was Busy (min): "
                     + formatter.format(results.get("timeServer" + i) / 60) + "; (%):  "
@@ -338,7 +382,7 @@ class App {
 /**
  * Enum for server status either IDLE or BUSY
  */
-enum State {
+enum Status {
 
     /**
      * Server state idle
@@ -364,4 +408,19 @@ enum EventType {
      * Event type Departure
      */
     DEPARTURE;
+};
+
+/**
+ * Enum for server type either EXPERIENCED or PRIMARY
+ */
+enum ServerType {
+
+    /**
+     * Event type Experienced
+     */
+    EXPERIENCED,
+    /**
+     * Event type Primary
+     */
+    PRIMARY;
 };
