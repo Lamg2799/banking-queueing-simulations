@@ -50,19 +50,19 @@ class App {
     /**
      * The max number of execution with different server numbers
      */
-    private int maxExecution = 5; // default value
+    private int NUM_SERVERS_TO_TEST = 5; // default value
     /**
      * The max number of customer allowed in the waiting line at the same time (New
      * Realities)
      */
-    private int maxQueueSize = 2; // default value
+    private int MAX_QUEUE_SIZE = 2; // default value 2 - *negative numbers represents infinite 
     /**
      * The mean divider which is used to produce diffrent values from reference
      * document
      * with 1.0 value it will simulate using the same datas as the
      * reference document
      */
-    private double meanDivider = 1; // default value
+    private double MEAN_DIVIDER = 1; // default value
     /**
      * Constant for average service time
      */
@@ -91,7 +91,7 @@ class App {
     /**
      * Main static function for project start
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=meanDivider;
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=MEAN_DIVIDER;
      */
     public static void main(String[] args) {
 
@@ -102,7 +102,7 @@ class App {
     /**
      * Constructor
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=meanDivider;
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanS;[3]=sigmaS;[4]=numServer;[5]=MEAN_DIVIDER;
      */
     private App(String[] args) {
         arguments = args;
@@ -116,25 +116,25 @@ class App {
     /**
      * Main execution function for the project,
      * will execute all the simulations trials with different parameters
-     * stops when it reachs maxExecution
+     * stops when it reachs NUM_SERVERS_TO_TEST
      */
     private void runSims() {
 
         var args = new String[6];
         // check if arguments are received or else use default values
         if (arguments != null && arguments.length == 3) {
-            maxQueueSize = Integer.parseInt(arguments[0]);
-            meanDivider = Double.parseDouble(arguments[1]);
-            maxExecution = Integer.parseInt(arguments[2]);
+            MAX_QUEUE_SIZE = Integer.parseInt(arguments[0]);
+            MEAN_DIVIDER = Double.parseDouble(arguments[1]);
+            NUM_SERVERS_TO_TEST = Integer.parseInt(arguments[2]);
         }
         args[0] = String.valueOf(MAX_LOOP);// # num execution should be set to 500
         args[1] = String.valueOf(MAX_CLOCK); // #max clock
         args[2] = String.valueOf(MEAN_SERVICE_TIME); // # mean service
         args[3] = String.valueOf(SIGMA_SERVICE_TIME); // # sigma service
-        args[5] = String.valueOf(meanDivider); // #mean divider
+        args[5] = String.valueOf(MEAN_DIVIDER); // #mean divider
 
         // loops through both kind of simulation and trying different number of servers
-        for (int serverNum = SERVER_START_NUM; serverNum < maxExecution + SERVER_START_NUM; serverNum++) {
+        for (int serverNum = SERVER_START_NUM; serverNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; serverNum++) {
             multiserver = new Multiserver();
             multiqueue = new Multiqueue();
             args[4] = String.valueOf(serverNum); // # number of server
@@ -148,7 +148,7 @@ class App {
         }
 
         // printing results for all trials
-        // finding optimal parameters based on maxQueueSize
+        // finding optimal parameters based on MAX_QUEUE_SIZE
         try {
             printMultiServerResults();
             computeMultiserverOptimal();
@@ -178,7 +178,11 @@ class App {
 
                 var cc = r.get("costPerCustomer");
                 var qsize = r.get("maxQueue");
-                if (cc < mincost && qsize <= maxQueueSize) {
+                if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
+                    mincost = cc;
+                    minserver = r.get("numServers");
+                    cost = r.get("totalCost");
+                } else if(MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
                     minserver = r.get("numServers");
                     cost = r.get("totalCost");
@@ -186,8 +190,8 @@ class App {
 
             }
             if (cost > 0) {
-                System.out.println("The optimal number of server with a mean divider of " + meanDivider
-                        + " and a maximum queue size of " + maxQueueSize + " for the multiqueue system is "
+                System.out.println("The optimal number of server with a mean divider of " + MEAN_DIVIDER
+                        + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiqueue system is "
                         + (int) minserver + " with a total cost of " + formatter.format(cost)
                         + "$ and a cost per customer of " + formatter.format(mincost) + "$");
             }
@@ -212,7 +216,11 @@ class App {
 
                 var cc = r.get("costPerCustomer");
                 var qsize = r.get("maxQueue");
-                if (cc < mincost && qsize <= maxQueueSize) {
+                if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
+                    mincost = cc;
+                    minserver = r.get("numServers");
+                    cost = r.get("totalCost");
+                } else if(MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
                     minserver = r.get("numServers");
                     cost = r.get("totalCost");
@@ -220,8 +228,8 @@ class App {
 
             }
             if (cost > 0) {
-                System.out.println("The optimal number of server with a mean divider of " + meanDivider
-                        + " and a maximum queue size of " + maxQueueSize + " for the multiserver system is "
+                System.out.println("The optimal number of server with a mean divider of " + MEAN_DIVIDER
+                        + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiserver system is "
                         + (int) minserver + " with a total cost of " + formatter.format(cost)
                         + "$ and a cost per customer of " + formatter.format(mincost) + "$");
             }
@@ -283,18 +291,18 @@ class App {
         System.out.println(
                 "Customers served = " + Math.round(results.get("custServed")) + " Customers served % " + formatter
                         .format(100 * Math.round(results.get("custServed")) / Math.round(results.get("custArrived"))));
-        System.out.println("Mean divider = " + results.get("meanDivider"));
+        System.out.println("Mean divider = " + results.get("MEAN_DIVIDER"));
         System.out.println("Total cost of server = " + formatter.format(results.get("totalCost")) + " $ per day");
         System.out.println("Total cost of server per customer served= "
                 + formatter.format(results.get("costPerCustomer")) + " $ per customer served");
         System.out.println("Num loop done: " + formattershort.format(results.get("loopDone")));
         System.out.println("Final clock (min): " + formatter.format(results.get("finalClock") / 60));
         // waiting time stats
-        System.out.println("Total waiting time average per executions (Ȳ) (min): "
+        System.out.println("Total waiting time average per executions (Y) (min): "
                 + formatter.format(results.get("waitingTime") / 60)
                 + "; Total waiting time average variance per executions (S^2) : "
                 + formatter.format(results.get("waitingTimeVar") / 3600)
-                + "; average per executions per customers (Ȳ) (min): "
+                + "; average per executions per customers (Y) (min): "
                 + formatter.format(results.get("avgWaitingTime") / 60)
                 + "; average variance per executions per customers (S^2) : "
                 + formatter.format(results.get("avgWaitingTimeVar") / 3600)
@@ -303,11 +311,11 @@ class App {
         System.out.println(
                 "Wainting time confidence interval (min): " + formatter.format(results.get("waitingTimeH") / 60));
         // system time stats
-        System.out.println("Total system time average per executions (Ȳ) (min): "
+        System.out.println("Total system time average per executions (Y) (min): "
                 + formatter.format(results.get("systemTime") / 60)
                 + "; Total system time average variance per executions (S^2): "
                 + formatter.format(results.get("systemTimeVar") / 3600)
-                + "; average per executions per customers (Ȳ) (min): "
+                + "; average per executions per customers (Y) (min): "
                 + formatter.format(results.get("avgSystemTime") / 60)
                 + "; average variance per executions per customers (S^2) : "
                 + formatter.format(results.get("avgSystemTimeVar") / 3600));

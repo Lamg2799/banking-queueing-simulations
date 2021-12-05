@@ -127,7 +127,7 @@ public class Multiserver {
      * with 1.0 value it will simulate using the same datas as the
      * reference document
      */
-    private double meanDivider = 2.0; // default value
+    private double meanDivider = 1.0; // default value
 
     /**
      * The simulation executions results
