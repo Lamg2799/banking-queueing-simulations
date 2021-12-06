@@ -106,7 +106,7 @@ class App {
     /**
      * Constant for max number of execution (Replications)
      */
-    private final int MAX_LOOP = 10;
+    private final int MAX_LOOP = 500;
     /**
      * Constant for number of server to start trial with
      */
