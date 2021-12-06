@@ -9,11 +9,11 @@ import java.util.HashMap;
  * Main class for Bank Queuing Simulation with New Realities project
  * University of Ottawa CSI 4124 group 4 fall 2021.
  * Group Members and Student IDs:
- * ● Samuel Garneau (2380248)
- * ● Chengen Lyu (300028734)
- * ● Jahesh Davodra (300018359)
- * ● Le Nguyen (300013304)
- * ● Luke Germond (300014113)
+ * Samuel Garneau (2380248)
+ * Chengen Lyu (300028734)
+ * Jahesh Davodra (300018359)
+ * Le Nguyen (300013304)
+ * Luke Germond (300014113)
  * 
  */
 class App {
@@ -319,6 +319,9 @@ class App {
                 System.out.println();
 
                 printReport(rst.getResults(), rst.getName());
+               
+               
+               
             }
         }
         System.out.println();

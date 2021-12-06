@@ -15,7 +15,7 @@ public class Results {
     /**
      * Hashmap containing all generated poisson random values
      */
-    private HashMap<String, LinkedList<Double>> resultsIaTime;
+    private LinkedList< LinkedList<Double>> resultsIaTime;
     /**
      * List containing the average waiting time for each execution
      */
@@ -43,7 +43,7 @@ public class Results {
     public Results(String name) {
         this.name = name;
         results = new HashMap<>();
-        resultsIaTime = new HashMap<>();
+        resultsIaTime = new LinkedList<>();
         waitingTime = new LinkedList<>();
         systemTime = new LinkedList<>();
         waitingTimeAvgVar = new LinkedList<>();
@@ -67,8 +67,8 @@ public class Results {
      * @param key   the result key index
      * @param value the list of random generated values
      */
-    public void addIaTimeResult(String key, LinkedList<Double> value) {
-        resultsIaTime.put(key, value);
+    public void addIaTimeResult(LinkedList<Double> value) {
+        resultsIaTime.add( value);
     }
 
     /**
@@ -130,7 +130,7 @@ public class Results {
      * 
      * @return resultsIaTime
      */
-    public HashMap<String, LinkedList<Double>> getResultsIaTime() {
+    public LinkedList< LinkedList<Double>> getResultsIaTime() {
         return resultsIaTime;
     }
 
