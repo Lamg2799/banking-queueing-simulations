@@ -18,14 +18,6 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
  */
 public class Multiqueue {
 
-    /**
-     * text color reset white
-     */
-    private static final String TEXT_RESET = "\u001B[0m";
-    /**
-     * text color green
-     */
-    private static final String TEXT_GREEN = "\u001B[32m";
 
     /**
      * List of customers to go through simulation
@@ -178,7 +170,10 @@ public class Multiqueue {
         // Starts simulation
         System.out.println();
         System.out.print(
-                TEXT_GREEN + "Running " + numMaxLoop + " multiqueue simulations with " + args[3] + " primary servers and " + args[4] + " experienced servers... ");
+            App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiserver simulations with "
+                    + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
+                    + App.GREEN + " experienced servers... ");
+
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -223,7 +218,7 @@ public class Multiqueue {
             currentLoop++;
         }
 
-        System.out.println("Done" + TEXT_RESET);
+        System.out.println("Done" + App.TEXT_RESET);
 
         // Generate the outputs
 

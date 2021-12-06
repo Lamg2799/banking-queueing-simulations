@@ -19,15 +19,6 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
 public class Multiserver {
 
     /**
-     * text color reset white
-     */
-    private static final String TEXT_RESET = "\u001B[0m";
-    /**
-     * text color green
-     */
-    private static final String TEXT_GREEN = "\u001B[32m";
-
-    /**
      * List of customers to go through simulation
      */
     private ArrayList<Customer> customers = null;
@@ -77,7 +68,8 @@ public class Multiserver {
     private double meanPrimaryS = 0;
 
     /**
-     * The desired primary server service time mean standart variation for the simulations
+     * The desired primary server service time mean standart variation for the
+     * simulations
      */
     private double sigmaPrimaryS = 0;
 
@@ -87,7 +79,8 @@ public class Multiserver {
     private double meanExperiencedS = 0;
 
     /**
-     * The desired experienced server service time mean standart variation for the simulations
+     * The desired experienced server service time mean standart variation for the
+     * simulations
      */
     private double sigmaExperiencedS = 0;
 
@@ -178,7 +171,9 @@ public class Multiserver {
         // Starts simulation
         System.out.println();
         System.out.print(
-            TEXT_GREEN + "Running " + numMaxLoop + " multiserver simulations with " + args[3] + " primary servers and " + args[4] + " experienced servers... ");
+                App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiserver simulations with "
+                        + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
+                        + App.GREEN + " experienced servers... ");
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -222,17 +217,18 @@ public class Multiserver {
             currentLoop++;
         }
 
-        System.out.println("Done" + TEXT_RESET);
+        System.out.println("Done" + App.TEXT_RESET);
 
         // Generate the outputs
 
         return storeResults();
     }
 
-  /**
-   * Retrieves the configs initialyze objects
-   * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanDivider;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiencedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
-   */
+    /**
+     * Retrieves the configs initialyze objects
+     * 
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanDivider;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiencedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
+     */
     private void initialize(String[] args) {
 
         // initalize parameters variables
@@ -253,10 +249,10 @@ public class Multiserver {
         numServer = numPrimary + numExperienced;
         customersQ = new CustomerQueue();
         servers = new Server[numServer];
-        for (int i=0; i < numPrimary; i++) {
+        for (int i = 0; i < numPrimary; i++) {
             servers[i] = new Server(meanPrimaryS, sigmaPrimaryS, dailyPayPrimary, ServerType.PRIMARY);
         }
-        for (int i=numPrimary; i < (numPrimary+numExperienced); i++) {
+        for (int i = numPrimary; i < (numPrimary + numExperienced); i++) {
             servers[i] = new Server(meanExperiencedS, sigmaExperiencedS, dailyPayExperienced, ServerType.EXPERIENCED);
         }
         results = new Results();
@@ -310,9 +306,9 @@ public class Multiserver {
      */
     private double generateNextIA(double time) {
 
-        //compute mean according to quadractic equation based on time of day
+        // compute mean according to quadractic equation based on time of day
         var mean = (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
-  
+
         var pd = new PoissonDistribution(mean / meanDivider);
         var ret = Math.abs(pd.sample());
         // System.out.println("Random value " + ret);
@@ -362,7 +358,8 @@ public class Multiserver {
             currentServer.setStatus(Status.BUSY);
             c.setServerIndex(index);
             // schedule departure event
-            double nextS = Math.abs(rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
+            double nextS = Math.abs(
+                    rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
             // compile server busy time
             currentServer.addToTotalServiceTime(nextS);
             // add departure event
@@ -414,7 +411,8 @@ public class Multiserver {
 
             // schedule departure event
 
-            double nextS = Math.abs(rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
+            double nextS = Math.abs(
+                    rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
             currentServer.addToTotalServiceTime(nextS);
             eventList.add(new Event(EventType.DEPARTURE, nextS + clock, c));
             sort();
@@ -489,7 +487,7 @@ public class Multiserver {
         var avgStats = getExecutionsStats(); // [0]=waitingTime;[1]=waitingTimeVar;[2]avgWaitingTime;[3]avgWaitingTimeVar;[4]=systemTime;[5]=systemTimeVar;[6]avgSystemTime;[7]avgSystemTimeVar;[8]waitingconfidenceInterval;[9]systemconfidenceInterval
 
         int totalCost = 0;
-        for (int i=0; i < servers.length; i++) {
+        for (int i = 0; i < servers.length; i++) {
             totalCost += servers[i].getDailyPay();
         }
 

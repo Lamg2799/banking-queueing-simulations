@@ -21,11 +21,23 @@ class App {
     /**
      * text color reset white
      */
-    private static final String TEXT_RESET = "\u001B[0m";
+    public static final String TEXT_RESET = "\u001B[0m"; // WHITE
+    /**
+     * text color red
+     */
+    public static final String RED = "\033[0;31m"; // RED
     /**
      * text color green
      */
-    private static final String TEXT_GREEN = "\u001B[32m";
+    public static final String GREEN = "\033[0;32m"; // GREEN
+    /**
+     * text color yellow
+     */
+    public static final String YELLOW = "\033[0;33m"; // YELLOW
+    /**
+     * text color blue
+     */
+    public static final String BLUE = "\033[0;34m"; // BLUE
     /**
      * Output formatter
      */
@@ -55,7 +67,7 @@ class App {
      * The max number of customer allowed in the waiting line at the same time (New
      * Realities)
      */
-    private int MAX_QUEUE_SIZE = 2; // default value 2 - *negative numbers represents infinite 
+    private int MAX_QUEUE_SIZE = 2; // default value 2 - *negative numbers represents infinite
     /**
      * The mean divider which is used to produce diffrent values from reference
      * document
@@ -108,7 +120,7 @@ class App {
      * Main static function for project start
      * 
      * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
-    */
+     */
     public static void main(String[] args) {
 
         new App(args);
@@ -154,8 +166,10 @@ class App {
         args[10] = String.valueOf(DAILY_PAY_EXPERIENCED); // # daily pay for experienced
 
         // TESTS WITH ALL SERVER COMBINATIONS EXCEPT ONLY EXPERIENCED
-        for (int primaryServerNum = SERVER_START_NUM; primaryServerNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; primaryServerNum++) {
-            for (int experiencedServerNum = 0; experiencedServerNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; experiencedServerNum++) {
+        for (int primaryServerNum = SERVER_START_NUM; primaryServerNum < NUM_SERVERS_TO_TEST
+                + SERVER_START_NUM; primaryServerNum++) {
+            for (int experiencedServerNum = 0; experiencedServerNum < NUM_SERVERS_TO_TEST
+                    + SERVER_START_NUM; experiencedServerNum++) {
                 multiserver = new Multiserver();
                 multiqueue = new Multiqueue();
                 args[3] = String.valueOf(primaryServerNum); // # number of primary server
@@ -173,7 +187,8 @@ class App {
             multiserver = new Multiserver();
             multiqueue = new Multiqueue();
             args[3] = "0"; // # number of primary servers
-            args[4] = String.valueOf(serverNum);; // number of experienced servers
+            args[4] = String.valueOf(serverNum);
+            ; // number of experienced servers
 
             // run multiserver sim
             multiServerResults.add(multiserver.runSim(args));
@@ -182,8 +197,6 @@ class App {
             multiQueueResults.add(multiqueue.runSim(args));
 
         }
-
-
 
         // printing results for all trials
         // finding optimal parameters based on MAX_QUEUE_SIZE
@@ -205,7 +218,7 @@ class App {
     private void computeMultiqueueOptimal() {
 
         // find lowest cost within restriction
-        System.out.println(TEXT_GREEN + "Finding optimal result for multiqueue..." + TEXT_RESET);
+        System.out.println(GREEN + "Finding optimal result for multiqueue..." + TEXT_RESET);
         double mincost = Double.MAX_VALUE;
         double minPrimaryServers = 0;
         double minExperiencedServers = 0;
@@ -221,7 +234,7 @@ class App {
                     minPrimaryServers = r.get("numPrimaryServers");
                     minExperiencedServers = r.get("numExperiencedServers");
                     cost = r.get("totalCost");
-                }else if(MAX_QUEUE_SIZE < 0) {
+                } else if (MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
                     minPrimaryServers = r.get("numPrimaryServers");
                     minExperiencedServers = r.get("numExperiencedServers");
@@ -230,11 +243,15 @@ class App {
 
             }
             if (cost > 0) {
-                System.out.println("The optimal number of servers with a mean divider of " + MEAN_DIVIDER
-                        + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiqueue system is "
-                        + (int) minPrimaryServers + " primary servers and " + (int) minExperiencedServers
-                        + " experienced  servers with a total cost of " + formatter.format(cost)
-                        + "$ and a cost per customer of " + formatter.format(mincost) + "$");
+                System.out.println(BLUE + "The optimal number of servers with a mean divider of " + TEXT_RESET
+                        + MEAN_DIVIDER
+                        + BLUE + " and a maximum queue size of " + TEXT_RESET
+                        + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE)
+                        + BLUE + " for the multiqueue system is " + TEXT_RESET
+                        + (int) minPrimaryServers + BLUE + " primary servers and " + TEXT_RESET
+                        + (int) minExperiencedServers
+                        + BLUE + " experienced  servers with a total cost of " + TEXT_RESET + formatter.format(cost)
+                        + BLUE + "$ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + "$");
             }
         }
     }
@@ -246,7 +263,7 @@ class App {
     private void computeMultiserverOptimal() {
 
         // find lowest cost within restriction
-        System.out.println(TEXT_GREEN + "Finding optimal result for multiserver..." + TEXT_RESET);
+        System.out.println(GREEN + "Finding optimal result for multiserver..." + TEXT_RESET);
         double mincost = Double.MAX_VALUE;
         double minPrimaryServers = 0;
         double minExperiencedServers = 0;
@@ -262,7 +279,7 @@ class App {
                     minPrimaryServers = r.get("numPrimaryServers");
                     minExperiencedServers = r.get("numExperiencedServers");
                     cost = r.get("totalCost");
-                }else if(MAX_QUEUE_SIZE < 0) {
+                } else if (MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
                     minPrimaryServers = r.get("numPrimaryServers");
                     minExperiencedServers = r.get("numExperiencedServers");
@@ -271,11 +288,15 @@ class App {
 
             }
             if (cost > 0) {
-                System.out.println("The optimal number of servers with a mean divider of " + MEAN_DIVIDER
-                        + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiqueue system is "
-                        + (int) minPrimaryServers + " primary servers and " + (int) minExperiencedServers
-                        + " experienced  servers with a total cost of " + formatter.format(cost)
-                        + "$ and a cost per customer of " + formatter.format(mincost) + "$");
+                System.out.println(BLUE + "The optimal number of servers with a mean divider of " + TEXT_RESET
+                        + MEAN_DIVIDER
+                        + BLUE + " and a maximum queue size of " + TEXT_RESET
+                        + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE)
+                        + BLUE + " for the multiqueue system is " + TEXT_RESET
+                        + (int) minPrimaryServers + BLUE + " primary servers and " + TEXT_RESET
+                        + (int) minExperiencedServers
+                        + BLUE + " experienced  servers with a total cost of " + TEXT_RESET + formatter.format(cost)
+                        + BLUE + "$ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + "$");
             }
         }
     }
@@ -285,7 +306,7 @@ class App {
      */
     private void printMultiServerResults() {
         System.out.println();
-        System.out.println(TEXT_GREEN + "Printing multiserver results..." + TEXT_RESET);
+        System.out.println(GREEN + "Printing multiserver results..." + TEXT_RESET);
         if (multiServerResults.size() > 0) {
             for (Results rst : multiServerResults) {
 
@@ -303,7 +324,7 @@ class App {
      */
     private void printMultiQueueResults() {
         System.out.println();
-        System.out.println(TEXT_GREEN + "Printing multiqueue results..." + TEXT_RESET);
+        System.out.println(GREEN + "Printing multiqueue results..." + TEXT_RESET);
         if (multiQueueResults.size() > 0) {
             for (Results rst : multiQueueResults) {
                 System.out.println();
@@ -328,53 +349,61 @@ class App {
         System.out.println();
 
         // Displaying result
-        System.out.println("Server types " + results.get("typeServers"));
-        System.out.println("Results with " + formattershort.format(results.get("numPrimaryServers")) + " primary servers and "
-            + formattershort.format(results.get("numExperiencedServers")) + " experienced servers");
-        System.out.println("Customers arrived = " + Math.round(results.get("custArrived")));
+        System.out.println(BLUE + "Server types " + TEXT_RESET + results.get("typeServers"));
+        System.out.println(BLUE + "Results with " + TEXT_RESET + formattershort.format(results.get("numPrimaryServers"))
+                + BLUE + " primary servers and "
+                + TEXT_RESET + formattershort.format(results.get("numExperiencedServers")) + BLUE
+                + " experienced servers");
+        System.out.println(BLUE + "Customers arrived = " + TEXT_RESET + Math.round(results.get("custArrived")));
 
-        System.out.println(
-                "Customers served = " + Math.round(results.get("custServed")) + " Customers served % " + formatter
+        System.out.println(BLUE +
+                "Customers served = " + TEXT_RESET + Math.round(results.get("custServed")) + BLUE
+                + " Customers served % " + TEXT_RESET + formatter
                         .format(100 * Math.round(results.get("custServed")) / Math.round(results.get("custArrived"))));
-        System.out.println("Mean divider = " + results.get("meanDivider"));
-        System.out.println("Total cost of server = " + formatter.format(results.get("totalCost")) + " $ per day");
-        System.out.println("Total cost of server per customer served= "
+        System.out.println(BLUE + "Mean divider = " + TEXT_RESET + results.get("meanDivider"));
+        System.out.println(BLUE + "Total cost of server = " + TEXT_RESET + formatter.format(results.get("totalCost"))
+                + " $ per day");
+        System.out.println(BLUE + "Total cost of server per customer served= " + TEXT_RESET
                 + formatter.format(results.get("costPerCustomer")) + " $ per customer served");
-        System.out.println("Num loop done: " + formattershort.format(results.get("loopDone")));
-        System.out.println("Final clock (min): " + formatter.format(results.get("finalClock") / 60));
+        System.out.println(BLUE + "Num loop done: " + TEXT_RESET + formattershort.format(results.get("loopDone")));
+        System.out
+                .println(BLUE + "Final clock (min): " + TEXT_RESET + formatter.format(results.get("finalClock") / 60));
         // waiting time stats
-        System.out.println("Total waiting time average per executions (Y) (min): "
+        System.out.println(BLUE + "Total waiting time average per executions (Y) (min): " + TEXT_RESET
                 + formatter.format(results.get("waitingTime") / 60)
-                + "; Total waiting time average variance per executions (S^2) : "
+                + BLUE + "; Total waiting time average variance per executions (S^2) : " + TEXT_RESET
                 + formatter.format(results.get("waitingTimeVar") / 3600)
-                + "; average per executions per customers (Y) (min): "
+                + BLUE + "; average per executions per customers (Y) (min): " + TEXT_RESET
                 + formatter.format(results.get("avgWaitingTime") / 60)
-                + "; average variance per executions per customers (S^2) : "
+                + BLUE + "; average variance per executions per customers (S^2) : " + TEXT_RESET
                 + formatter.format(results.get("avgWaitingTimeVar") / 3600)
-                + "; Max waiting time (min): "
+                + BLUE + "; Max waiting time (min): " + TEXT_RESET
                 + formatter.format(results.get("maxWaitingTime") / 60));
-        System.out.println(
-                "Waiting time confidence interval (%): " + formatter.format(results.get("waitingTimeH") / 60));
+        System.out.println(YELLOW +
+                "Waiting time confidence interval (%): " + TEXT_RESET
+                + formatter.format(results.get("waitingTimeH") / 60));
         // system time stats
-        System.out.println("Total system time average per executions (Y) (min): "
+        System.out.println(BLUE + "Total system time average per executions (Y) (min): " + TEXT_RESET
                 + formatter.format(results.get("systemTime") / 60)
-                + "; Total system time average variance per executions (S^2): "
+                + BLUE + "; Total system time average variance per executions (S^2): " + TEXT_RESET
                 + formatter.format(results.get("systemTimeVar") / 3600)
-                + "; average per executions per customers (Y) (min): "
+                + BLUE + "; average per executions per customers (Y) (min): " + TEXT_RESET
                 + formatter.format(results.get("avgSystemTime") / 60)
-                + "; average variance per executions per customers (S^2) : "
+                + BLUE + "; average variance per executions per customers (S^2) : " + TEXT_RESET
                 + formatter.format(results.get("avgSystemTimeVar") / 3600));
 
         System.out
-                .println("System time confidence interval (%): " + formatter.format(results.get("systemTimeH") / 60));
+                .println(YELLOW + "System time confidence interval (%): " + TEXT_RESET
+                        + formatter.format(results.get("systemTimeH") / 60));
 
         for (int i = 0; i < (results.get("numPrimaryServers") + results.get("numExperiencedServers")); i++) {
 
-            System.out.println("Total time Server #: " + i + " was Busy (min): "
-                    + formatter.format(results.get("timeServer" + i) / 60) + "; (%):  "
+            System.out.println(BLUE + "Total time Server #: " + TEXT_RESET + i + BLUE + " was Busy (min): " + TEXT_RESET
+                    + formatter.format(results.get("timeServer" + i) / 60) + BLUE + "; (%):  " + TEXT_RESET
                     + formatter.format(results.get("timeServer" + i + "%")));
         }
-        System.out.println("Max customers waiting in line: " + formattershort.format(results.get("maxQueue")));
+        System.out.println(
+                BLUE + "Max customers waiting in line: " + TEXT_RESET + formattershort.format(results.get("maxQueue")));
 
     }
 

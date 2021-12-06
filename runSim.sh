@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #Multiserver v1.0
 
-localPath="C:\Users\Legia\Documents\Uni\Year4\Term3\CSI4124-Foundation Modelling & Simulation\CSI4124_group-4th"
+localPath="/home/sam/Documents/UOttawa_21-22/Live_code/Java_Projects/multiserver"
 srcPath="/com/sim/proj"
 mainClass="com.sim.proj.App"
 jarName="multiserver.jar"
@@ -28,7 +28,10 @@ echo "Exporting jar...Done"
 echo "Starting Simulation..."
 time=$(date +"%T")
 echo "Results stored in file: results_$time"
-cd "$localPath" && java -jar ./"$jarName" $meanDivider $maxQueueSize $maxTrial > ./results_"$time"
+cd "$localPath" && java -jar ./"$jarName" $meanDivider $maxQueueSize $maxTrial  > ./results_"$time"
 echo
 echo "Simulation completed"
 echo
+echo "Displaying output from results_$time"
+echo
+less -R ./results_"$time"
