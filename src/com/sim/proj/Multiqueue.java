@@ -157,6 +157,18 @@ public class Multiqueue {
      * The Z value use to compute confidence interval
      */
     private final double Z = 1.96;// from normal table
+    /**
+     * The interarrival the random values
+     */
+    private LinkedList<Double> randomValues = null;
+    /**
+     * The current trial
+     */
+    private int trial = 0;
+    /**
+     * The current result level
+     */
+    private int resultLevel = 0;
 
     /**
      * Run simulation main method,
@@ -170,11 +182,13 @@ public class Multiqueue {
         initialize(args);
 
         // Starts simulation
-        System.out.println();
-        System.out.print(
-                App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiqueue simulations with "
-                        + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
-                        + App.GREEN + " experienced servers... ");
+        if (resultLevel > 1) {
+            System.out.println();
+            System.out.print(
+                    App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiqueue simulations with "
+                            + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
+                            + App.GREEN + " experienced servers... ");
+        } 
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -218,9 +232,9 @@ public class Multiqueue {
             totalClock += clock;
             currentLoop++;
         }
-
-        System.out.println("Done" + App.TEXT_RESET);
-
+        if (resultLevel > 1) {
+            System.out.println("Done" + App.TEXT_RESET);
+        } 
         // Generate the outputs
 
         return storeResults();
@@ -245,7 +259,8 @@ public class Multiqueue {
         sigmaExperiencedS = Integer.parseInt(args[8]);
         dailyPayPrimary = Integer.parseInt(args[9]);
         dailyPayExperienced = Integer.parseInt(args[10]);
-        var trial = Integer.parseInt(args[11]);
+        trial = Integer.parseInt(args[11]);
+        resultLevel = Integer.parseInt(args[12]);
 
         numCustomersServed = 0;
         rdmS = new Random();
@@ -279,6 +294,7 @@ public class Multiqueue {
         clock = 0;
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
+        randomValues = new LinkedList<>();
 
         for (int i = 0; i < servers.length; i++) {
             servers[i].setStatus(Status.IDLE);
@@ -322,8 +338,8 @@ public class Multiqueue {
         var mean = (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
 
         var pd = new PoissonDistribution(mean / meanDivider);
-        var ret = Math.abs(pd.sample());
-        // System.out.println("Random value " + ret);
+        var ret = Math.abs((double) pd.sample());
+        randomValues.add(ret);
 
         return ret;
     }
@@ -486,7 +502,7 @@ public class Multiqueue {
         var systemTimeAvgVar = systemVarAcc / (double) customers.size();
 
         // store in results
-
+        results.addIaTimeResult(randomValues);
         results.addWaitingTime(waitingAcc);
         results.addSystemTime(systemAcc);
         results.addWaitingTimeAvgVar(waitingTimeAvgVar);

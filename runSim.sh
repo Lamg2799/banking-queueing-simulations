@@ -11,6 +11,7 @@ libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 meanDivider=1
 maxQueueSize=2 
 maxTrial=6
+resultLevel=0
 
 
 
@@ -28,7 +29,7 @@ echo "Exporting jar...Done"
 echo "Starting Simulation..."
 time=$(date +"%T")
 echo "Results stored in file: results_$time"
-cd "$localPath" && java -jar ./"$jarName" $meanDivider $maxQueueSize $maxTrial  > ./results_"$time"
+cd "$localPath" && java -jar ./"$jarName" $meanDivider $maxQueueSize $maxTrial $resultLevel > ./results_"$time"
 echo
 echo "Simulation completed"
 echo
