@@ -26,8 +26,9 @@ cd "$localPath"/bin && jar cfe ../"$jarName"  "$mainClass" ./*
 
 echo "Exporting jar...Done"
 echo "Starting Simulation..."
-
-cd "$localPath" && java -jar ./"$jarName" $meanDivider $maxQueueSize $maxTrial 
+time=$(date +"%T")
+echo "Results stored in file: results_$time"
+cd "$localPath" && java -jar ./"$jarName" $meanDivider $maxQueueSize $maxTrial > ./results_"$time"
 echo
 echo "Simulation completed"
 echo
