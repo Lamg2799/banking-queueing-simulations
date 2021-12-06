@@ -50,23 +50,23 @@ class App {
     /**
      * The max number of execution with different server numbers
      */
-    private int maxExecution = 5; // default value
+    private int NUM_SERVERS_TO_TEST = 5; // default value
     /**
      * The max number of customer allowed in the waiting line at the same time (New
      * Realities)
      */
-    private int maxQueueSize = 2; // default value
+    private int MAX_QUEUE_SIZE = 2; // default value 2 - *negative numbers represents infinite 
     /**
      * The mean divider which is used to produce diffrent values from reference
      * document
      * with 1.0 value it will simulate using the same datas as the
      * reference document
      */
-    private double meanDivider = 1.0; // default value
+    private double MEAN_DIVIDER = 1; // default value
     /**
      * Constant for average service time for primary server
      */
-    private final int MEAN_PRIMARY_SERVICE_TIME = 150;
+    private final int MEAN_PRIMARY_SERVICE_TIME = 200;
     /**
      * Constant for average service time sigma for primary server
      */
@@ -74,7 +74,7 @@ class App {
     /**
      * Constant for average service time for experienced server
      */
-    private final int MEAN_EXPERIENCED_SERVICE_TIME = 150;
+    private final int MEAN_EXPERIENCED_SERVICE_TIME = 120;
     /**
      * Constant for average service time sigma for experienced server
      */
@@ -82,11 +82,11 @@ class App {
     /**
      * Constant for daily pay for primary servers
      */
-    final int DAILY_PAY_PRIMARY = 320;
+    final int DAILY_PAY_PRIMARY = 256;
     /**
      * Constant for daily pay for experienced servers
      */
-    final int DAILY_PAY_EXPERIENCED = 320;
+    final int DAILY_PAY_EXPERIENCED = 480;
     /**
      * Constant for workday duration in seconds
      */
@@ -94,7 +94,7 @@ class App {
     /**
      * Constant for max number of execution (Replications)
      */
-    private final int MAX_LOOP = 2000;
+    private final int MAX_LOOP = 500;
     /**
      * Constant for number of server to start trial with
      */
@@ -107,8 +107,8 @@ class App {
     /**
      * Main static function for project start
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanDivider;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
-     */
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
+    */
     public static void main(String[] args) {
 
         new App(args);
@@ -118,7 +118,7 @@ class App {
     /**
      * Constructor
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanDivider;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
      */
     private App(String[] args) {
         arguments = args;
@@ -132,20 +132,20 @@ class App {
     /**
      * Main execution function for the project,
      * will execute all the simulations trials with different parameters
-     * stops when it reachs maxExecution
+     * stops when it reachs NUM_SERVERS_TO_TEST
      */
     private void runSims() {
 
         var args = new String[11];
         // check if arguments are received or else use default values
         if (arguments != null && arguments.length == 3) {
-            maxQueueSize = Integer.parseInt(arguments[0]);
-            meanDivider = Double.parseDouble(arguments[1]);
-            maxExecution = Integer.parseInt(arguments[2]);
+            MAX_QUEUE_SIZE = Integer.parseInt(arguments[0]);
+            MEAN_DIVIDER = Double.parseDouble(arguments[1]);
+            NUM_SERVERS_TO_TEST = Integer.parseInt(arguments[2]);
         }
         args[0] = String.valueOf(MAX_LOOP);// # num execution should be set to 500
         args[1] = String.valueOf(MAX_CLOCK); // #max clock
-        args[2] = String.valueOf((int) meanDivider); // #mean divider
+        args[2] = String.valueOf((int) MEAN_DIVIDER); // #mean divider
         args[5] = String.valueOf(MEAN_PRIMARY_SERVICE_TIME); // # mean service for primary
         args[6] = String.valueOf(SIGMA_PRIMARY_SERVICE_TIME); // # sigma service for primary
         args[7] = String.valueOf(MEAN_EXPERIENCED_SERVICE_TIME); // # mean service for experienced
@@ -154,8 +154,8 @@ class App {
         args[10] = String.valueOf(DAILY_PAY_EXPERIENCED); // # daily pay for experienced
 
         // TESTS WITH ALL SERVER COMBINATIONS EXCEPT ONLY EXPERIENCED
-        for (int primaryServerNum = SERVER_START_NUM; primaryServerNum < maxExecution + SERVER_START_NUM; primaryServerNum++) {
-            for (int experiencedServerNum = 0; experiencedServerNum < maxExecution + SERVER_START_NUM; experiencedServerNum++) {
+        for (int primaryServerNum = SERVER_START_NUM; primaryServerNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; primaryServerNum++) {
+            for (int experiencedServerNum = 0; experiencedServerNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; experiencedServerNum++) {
                 multiserver = new Multiserver();
                 multiqueue = new Multiqueue();
                 args[3] = String.valueOf(primaryServerNum); // # number of primary server
@@ -169,7 +169,7 @@ class App {
             }
         }
         // TESTS WITH ONLY EXPERIENCED SERVERS
-        for (int serverNum = SERVER_START_NUM; serverNum < maxExecution + SERVER_START_NUM; serverNum++) {
+        for (int serverNum = SERVER_START_NUM; serverNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; serverNum++) {
             multiserver = new Multiserver();
             multiqueue = new Multiqueue();
             args[3] = "0"; // # number of primary servers
@@ -186,7 +186,7 @@ class App {
 
 
         // printing results for all trials
-        // finding optimal parameters based on maxQueueSize
+        // finding optimal parameters based on MAX_QUEUE_SIZE
         try {
             printMultiServerResults();
             computeMultiserverOptimal();
@@ -214,10 +214,14 @@ class App {
             for (Results rst : multiQueueResults) {
                 // retrieve result hashmap
                 var r = rst.getResults();
-
                 var cc = r.get("costPerCustomer");
                 var qsize = r.get("maxQueue");
-                if (cc < mincost && qsize <= maxQueueSize) {
+                if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
+                    mincost = cc;
+                    minPrimaryServers = r.get("numPrimaryServers");
+                    minExperiencedServers = r.get("numExperiencedServers");
+                    cost = r.get("totalCost");
+                }else if(MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
                     minPrimaryServers = r.get("numPrimaryServers");
                     minExperiencedServers = r.get("numExperiencedServers");
@@ -226,8 +230,8 @@ class App {
 
             }
             if (cost > 0) {
-                System.out.println("The optimal number of servers with a mean divider of " + meanDivider
-                        + " and a maximum queue size of " + maxQueueSize + " for the multiqueue system is "
+                System.out.println("The optimal number of servers with a mean divider of " + MEAN_DIVIDER
+                        + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiqueue system is "
                         + (int) minPrimaryServers + " primary servers and " + (int) minExperiencedServers
                         + " experienced  servers with a total cost of " + formatter.format(cost)
                         + "$ and a cost per customer of " + formatter.format(mincost) + "$");
@@ -251,10 +255,14 @@ class App {
             for (Results rst : multiServerResults) {
                 // retrieve result hashmap
                 var r = rst.getResults();
-
                 var cc = r.get("costPerCustomer");
                 var qsize = r.get("maxQueue");
-                if (cc < mincost && qsize <= maxQueueSize) {
+                if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
+                    mincost = cc;
+                    minPrimaryServers = r.get("numPrimaryServers");
+                    minExperiencedServers = r.get("numExperiencedServers");
+                    cost = r.get("totalCost");
+                }else if(MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
                     minPrimaryServers = r.get("numPrimaryServers");
                     minExperiencedServers = r.get("numExperiencedServers");
@@ -263,8 +271,8 @@ class App {
 
             }
             if (cost > 0) {
-                System.out.println("The optimal number of servers with a mean divider of " + meanDivider
-                        + " and a maximum queue size of " + maxQueueSize + " for the multiserver system is "
+                System.out.println("The optimal number of servers with a mean divider of " + MEAN_DIVIDER
+                        + " and a maximum queue size of " + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE) + " for the multiqueue system is "
                         + (int) minPrimaryServers + " primary servers and " + (int) minExperiencedServers
                         + " experienced  servers with a total cost of " + formatter.format(cost)
                         + "$ and a cost per customer of " + formatter.format(mincost) + "$");
@@ -335,30 +343,30 @@ class App {
         System.out.println("Num loop done: " + formattershort.format(results.get("loopDone")));
         System.out.println("Final clock (min): " + formatter.format(results.get("finalClock") / 60));
         // waiting time stats
-        System.out.println("Total waiting time average per executions (Ȳ) (min): "
+        System.out.println("Total waiting time average per executions (Y) (min): "
                 + formatter.format(results.get("waitingTime") / 60)
                 + "; Total waiting time average variance per executions (S^2) : "
                 + formatter.format(results.get("waitingTimeVar") / 3600)
-                + "; average per executions per customers (Ȳ) (min): "
+                + "; average per executions per customers (Y) (min): "
                 + formatter.format(results.get("avgWaitingTime") / 60)
                 + "; average variance per executions per customers (S^2) : "
                 + formatter.format(results.get("avgWaitingTimeVar") / 3600)
                 + "; Max waiting time (min): "
                 + formatter.format(results.get("maxWaitingTime") / 60));
         System.out.println(
-                "Wainting time confidence interval (min): " + formatter.format(results.get("waitingTimeH") / 60));
+                "Waiting time confidence interval (%): " + formatter.format(results.get("waitingTimeH") / 60));
         // system time stats
-        System.out.println("Total system time average per executions (Ȳ) (min): "
+        System.out.println("Total system time average per executions (Y) (min): "
                 + formatter.format(results.get("systemTime") / 60)
                 + "; Total system time average variance per executions (S^2): "
                 + formatter.format(results.get("systemTimeVar") / 3600)
-                + "; average per executions per customers (Ȳ) (min): "
+                + "; average per executions per customers (Y) (min): "
                 + formatter.format(results.get("avgSystemTime") / 60)
                 + "; average variance per executions per customers (S^2) : "
                 + formatter.format(results.get("avgSystemTimeVar") / 3600));
 
         System.out
-                .println("System time confidence interval (min): " + formatter.format(results.get("systemTimeH") / 60));
+                .println("System time confidence interval (%): " + formatter.format(results.get("systemTimeH") / 60));
 
         for (int i = 0; i < (results.get("numPrimaryServers") + results.get("numExperiencedServers")); i++) {
 

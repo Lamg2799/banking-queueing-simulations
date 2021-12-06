@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #Multiserver v1.0
 
-localPath="/home/sam/Documents/UOttawa_21-22/Live_code/Java_Projects/multiserver"
+localPath="C:\Users\Legia\Documents\Uni\Year4\Term3\CSI4124-Foundation Modelling & Simulation\CSI4124_group-4th"
 srcPath="/com/sim/proj"
 mainClass="com.sim.proj.App"
 jarName="multiserver.jar"
 libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 
 #arguments
-meanDivider=2
+meanDivider=1
 maxQueueSize=2 
 maxTrial=6
 

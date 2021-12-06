@@ -162,7 +162,7 @@ public class Multiserver {
     /**
      * The Z value use to compute confidence interval
      */
-    private final double Z = 0.7088;// from normal table
+    private final double Z = 1.96;// from normal table
 
     /**
      * Run simulation main method,
