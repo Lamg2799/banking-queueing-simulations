@@ -181,13 +181,13 @@ public class Multiserver {
         initialize(args);
 
         // Starts simulation
-        if (resultLevel > 1) {
+        if (resultLevel > 1 && resultLevel < 5) {
             System.out.println();
             System.out.print(
                     App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiserver simulations with "
                             + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
                             + App.GREEN + " experienced servers... ");
-        } 
+        }
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
 
@@ -229,8 +229,8 @@ public class Multiserver {
             totalClock += clock;
             currentLoop++;
         }
-        if (resultLevel > 1) {
-        System.out.println("Done" + App.TEXT_RESET);
+        if (resultLevel > 1 && resultLevel < 5) {
+            System.out.println("Done" + App.TEXT_RESET);
         }
         // Generate the outputs
 
@@ -466,30 +466,37 @@ public class Multiserver {
         // compute avg waiting and system time
         var waitingAcc = 0.0;
         var systemAcc = 0.0;
+        var arrivalAcc = 0.0;
 
         for (Customer customer : customers) {
             waitingAcc += customer.getWaitingTime();
             systemAcc += customer.getTotalSystemTime();
+            arrivalAcc += customer.getInterArrivalValues();
         }
         var waitingTimeAvg = waitingAcc / (double) customers.size();
         var systemTimeAvg = systemAcc / (double) customers.size();
+        var interarrivalTimeAvg = arrivalAcc / (double) customers.size();
 
         // compute variance
         var waitingVarAcc = 0.0;
         var systemVarAcc = 0.0;
+        var interarrivalVarAcc = 0.0;
         for (Customer customer : customers) {
             waitingVarAcc += Math.pow(customer.getWaitingTime() - waitingTimeAvg, 2);
             systemVarAcc += Math.pow(customer.getTotalSystemTime() - systemTimeAvg, 2);
+            interarrivalVarAcc += Math.pow(customer.getInterArrivalValues() - interarrivalTimeAvg, 2);
         }
         var waitingTimeAvgVar = waitingVarAcc / (double) customers.size();
         var systemTimeAvgVar = systemVarAcc / (double) customers.size();
-
+        var interarrivalAvgVar = interarrivalVarAcc / (double) customers.size();
         // store in results
         results.addIaTimeResult(randomValues);
-        results.addWaitingTime(waitingAcc);
-        results.addSystemTime(systemAcc);
+        results.addWaitingTimeAvg(waitingAcc);
+        results.addSystemTimeAvg(systemAcc);
         results.addWaitingTimeAvgVar(waitingTimeAvgVar);
         results.addSystemTimeAvgVar(systemTimeAvgVar);
+        results.addIaTimeAvg(interarrivalTimeAvg);
+        results.addIaTimeAvgVar(interarrivalAvgVar);
     }
 
     /**
@@ -568,13 +575,13 @@ public class Multiserver {
         }
 
         // compute total waiting time
-        for (double avgwait : results.getWaitingTime()) {
+        for (double avgwait : results.getWaitingTimeAvg()) {
             ret[0] += avgwait;
         }
         ret[0] = ret[0] / maxloop;
 
         // compute total waiting time variance
-        for (double avgwait : results.getWaitingTime()) {
+        for (double avgwait : results.getWaitingTimeAvg()) {
             ret[1] += Math.pow(avgwait - ret[0], 2);
         }
         ret[1] = ret[1] / (maxloop - 1);
@@ -584,13 +591,13 @@ public class Multiserver {
         ret[3] = ret[1] / cust;
 
         // compute total system time
-        for (double avgsyst : results.getSystemTime()) {
+        for (double avgsyst : results.getSystemTimeAvg()) {
             ret[4] += avgsyst;
         }
         ret[4] = ret[4] / maxloop;
 
         // compute total system time variance
-        for (double avgsyst : results.getSystemTime()) {
+        for (double avgsyst : results.getSystemTimeAvg()) {
 
             ret[5] += Math.pow(avgsyst - ret[4], 2);
         }
