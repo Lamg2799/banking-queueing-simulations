@@ -15,7 +15,7 @@ public class Results {
     /**
      * Hashmap containing all generated poisson random values
      */
-    private HashMap<String, LinkedList<Double>> resultsIaTime;
+    private LinkedList< LinkedList<Double>> resultsIaTime;
     /**
      * List containing the average waiting time for each execution
      */
@@ -32,13 +32,18 @@ public class Results {
      * List containing the average system time variance for each execution
      */
     private LinkedList<Double> systemTimeAvgVar;
+    /**
+     * name of the results
+     */
+    private String name;
 
     /**
      * Constructor
      */
-    public Results() {
+    public Results(String name) {
+        this.name = name;
         results = new HashMap<>();
-        resultsIaTime = new HashMap<>();
+        resultsIaTime = new LinkedList<>();
         waitingTime = new LinkedList<>();
         systemTime = new LinkedList<>();
         waitingTimeAvgVar = new LinkedList<>();
@@ -48,7 +53,7 @@ public class Results {
     /**
      * to store results with type double
      * 
-     * @param key the result key index
+     * @param key   the result key index
      * @param value the result value
      */
     public void addResult(String key, Double value) {
@@ -59,11 +64,11 @@ public class Results {
      * to store inter-arrival random generated values ( for possible reference in
      * the report)
      * 
-     * @param key the result key index
+     * @param key   the result key index
      * @param value the list of random generated values
      */
-    public void addIaTimeResult(String key, LinkedList<Double> value) {
-        resultsIaTime.put(key, value);
+    public void addIaTimeResult(LinkedList<Double> value) {
+        resultsIaTime.add( value);
     }
 
     /**
@@ -103,6 +108,15 @@ public class Results {
     }
 
     /**
+     * Get results object name
+     * 
+     * @return name of results
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * Returns the hashmap containing all the results
      * 
      * @return results
@@ -116,12 +130,13 @@ public class Results {
      * 
      * @return resultsIaTime
      */
-    public HashMap<String, LinkedList<Double>> getResultsIaTime() {
+    public LinkedList< LinkedList<Double>> getResultsIaTime() {
         return resultsIaTime;
     }
 
     /**
-     * Returns the waiting time average for each execution 
+     * Returns the waiting time average for each execution
+     * 
      * @return waitingTime
      */
     public LinkedList<Double> getWaitingTime() {
@@ -129,7 +144,8 @@ public class Results {
     }
 
     /**
-     * Returns the system time average for each execution 
+     * Returns the system time average for each execution
+     * 
      * @return systemTime
      */
     public LinkedList<Double> getSystemTime() {
@@ -137,15 +153,17 @@ public class Results {
     }
 
     /**
-     * Returns the waiting time average variance for each execution 
+     * Returns the waiting time average variance for each execution
+     * 
      * @return waitingTimeAvgVar
      */
     public LinkedList<Double> getWaitingTimeAvgVar() {
         return waitingTimeAvgVar;
     }
 
-     /**
-     * Returns the system time average variancee for each execution 
+    /**
+     * Returns the system time average variancee for each execution
+     * 
      * @return systemTimeAvgVar
      */
     public LinkedList<Double> getSystemTimeAvgVar() {

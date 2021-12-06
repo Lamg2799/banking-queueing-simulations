@@ -243,6 +243,7 @@ public class Multiserver {
         sigmaExperiencedS = Integer.parseInt(args[8]);
         dailyPayPrimary = Integer.parseInt(args[9]);
         dailyPayExperienced = Integer.parseInt(args[10]);
+        var trial = Integer.parseInt(args[11]);
 
         numCustomersServed = 0;
         rdmS = new Random();
@@ -255,7 +256,12 @@ public class Multiserver {
         for (int i = numPrimary; i < (numPrimary + numExperienced); i++) {
             servers[i] = new Server(meanExperiencedS, sigmaExperiencedS, dailyPayExperienced, ServerType.EXPERIENCED);
         }
-        results = new Results();
+        var name = App.GREEN + "Results for multiserver simulations trial # " + App.TEXT_RESET + trial + App.GREEN
+                + " with "
+                + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
+                + App.GREEN + " experienced servers... ";
+
+        results = new Results(name);
     }
 
     /**
