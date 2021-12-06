@@ -386,7 +386,7 @@ class App {
                 + formatter.format(results.get("maxWaitingTime") / 60));
         System.out.println(YELLOW +
                 "Waiting time confidence interval (%): " + TEXT_RESET
-                + formatter.format(results.get("waitingTimeH") / 60));
+                + formatter.format(results.get("waitingTimeH")));
         // system time stats
         System.out.println(BLUE + "Total system time average per executions (Y) (min): " + TEXT_RESET
                 + formatter.format(results.get("systemTime") / 60)
@@ -399,7 +399,7 @@ class App {
 
         System.out
                 .println(YELLOW + "System time confidence interval (%): " + TEXT_RESET
-                        + formatter.format(results.get("systemTimeH") / 60));
+                        + formatter.format(results.get("systemTimeH")));
 
         for (int i = 0; i < (results.get("numPrimaryServers") + results.get("numExperiencedServers")); i++) {
 
