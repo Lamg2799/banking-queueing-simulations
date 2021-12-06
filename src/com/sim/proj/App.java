@@ -94,7 +94,7 @@ class App {
     /**
      * Constant for max number of execution (Replications)
      */
-    private final int MAX_LOOP = 2000;
+    private final int MAX_LOOP = 500;
     /**
      * Constant for number of server to start trial with
      */
@@ -108,6 +108,7 @@ class App {
      * Main static function for project start
      * 
      * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
+    */
     public static void main(String[] args) {
 
         new App(args);
@@ -335,7 +336,7 @@ class App {
         System.out.println(
                 "Customers served = " + Math.round(results.get("custServed")) + " Customers served % " + formatter
                         .format(100 * Math.round(results.get("custServed")) / Math.round(results.get("custArrived"))));
-        System.out.println("Mean divider = " + results.get("MEAN_DIVIDER"));
+        System.out.println("Mean divider = " + results.get("meanDivider"));
         System.out.println("Total cost of server = " + formatter.format(results.get("totalCost")) + " $ per day");
         System.out.println("Total cost of server per customer served= "
                 + formatter.format(results.get("costPerCustomer")) + " $ per customer served");
@@ -353,7 +354,7 @@ class App {
                 + "; Max waiting time (min): "
                 + formatter.format(results.get("maxWaitingTime") / 60));
         System.out.println(
-                "Wainting time confidence interval (min): " + formatter.format(results.get("waitingTimeH") / 60));
+                "Waiting time confidence interval (%): " + formatter.format(results.get("waitingTimeH") / 60));
         // system time stats
         System.out.println("Total system time average per executions (Y) (min): "
                 + formatter.format(results.get("systemTime") / 60)
@@ -365,7 +366,7 @@ class App {
                 + formatter.format(results.get("avgSystemTimeVar") / 3600));
 
         System.out
-                .println("System time confidence interval (min): " + formatter.format(results.get("systemTimeH") / 60));
+                .println("System time confidence interval (%): " + formatter.format(results.get("systemTimeH") / 60));
 
         for (int i = 0; i < (results.get("numPrimaryServers") + results.get("numExperiencedServers")); i++) {
 
