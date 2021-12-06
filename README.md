@@ -25,9 +25,4 @@ Meanwhile, the compiled output files will be generated in the `bin` folder by de
 - Run option 2: open runSim.sh and edit localPath field with your local project folder path. open bash (git bash for windows) in the project folder and run ./runSim.sh. runSim.sh will   - compile the project, export the jar and execute it. Outputs are printed in a file called results_XXX, and then dysplayed in the terminal with colors
 - to open any results_XXX file with text colors, run: less -R ./results_XXX (This also ensure that you get all the outputs in the terminal)
 
-- Run option 2: open runSim.sh and edit localPath field with your local project folder path.
-                open bash (git bash for windows) in the project folder and run ./runSim.sh.
-                runSim.sh will compile the project, export the jar and execute it
-                Outputs are printed in a file called results_XXX
-
 - https://github.com/microsoft/vscode-java-dependency#manage-dependencies for more details.
