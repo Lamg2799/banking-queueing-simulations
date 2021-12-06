@@ -245,13 +245,18 @@ class App {
             }
 
         }
-
+        System.out.println();
+         System.out.println();
         // printing results for all trials
         // finding optimal parameters based on MAX_QUEUE_SIZE
         try {
-            printMultiServerResults();
+            if (resultLevel > 0) {
+                printMultiServerResults();
+            }
             computeMultiserverOptimal();
-            printMultiQueueResults();
+            if (resultLevel > 0) {
+                printMultiQueueResults();
+            }
             computeMultiqueueOptimal();
         } catch (Exception e) {
 
