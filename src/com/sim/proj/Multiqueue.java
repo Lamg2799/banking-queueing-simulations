@@ -597,8 +597,16 @@ public class Multiqueue {
         ret[7] = ret[5] / cust;
 
         // compute confidence interval
-        ret[8] = Z * Math.sqrt(ret[1]) / Math.sqrt(maxloop);
-        ret[9] = Z * Math.sqrt(ret[5]) / Math.sqrt(maxloop);
+        ret[8] = (Z * Math.sqrt(ret[1])) / Math.sqrt(maxloop);
+        ret[9] = (Z * Math.sqrt(ret[5])) / Math.sqrt(maxloop);
+
+        if (ret[8] > 100){
+            ret[8] = 100;
+        }
+
+        if (ret[9] > 100){
+            ret[9] = 100;
+        }
 
         return ret;
     }
