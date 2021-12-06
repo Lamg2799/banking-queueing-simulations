@@ -170,7 +170,7 @@ public class Multiqueue {
         // Starts simulation
         System.out.println();
         System.out.print(
-            App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiserver simulations with "
+            App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiqueue simulations with "
                     + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
                     + App.GREEN + " experienced servers... ");
 
