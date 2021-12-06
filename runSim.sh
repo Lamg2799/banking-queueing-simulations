@@ -8,7 +8,7 @@ jarName="multiserver.jar"
 libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 
 #arguments
-meanDivider=2
+meanDivider=1
 maxQueueSize=2 
 maxTrial=6
 

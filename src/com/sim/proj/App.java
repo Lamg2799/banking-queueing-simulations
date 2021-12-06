@@ -66,7 +66,7 @@ class App {
     /**
      * Constant for average service time for primary server
      */
-    private final int MEAN_PRIMARY_SERVICE_TIME = 150;
+    private final int MEAN_PRIMARY_SERVICE_TIME = 200;
     /**
      * Constant for average service time sigma for primary server
      */
@@ -74,7 +74,7 @@ class App {
     /**
      * Constant for average service time for experienced server
      */
-    private final int MEAN_EXPERIENCED_SERVICE_TIME = 150;
+    private final int MEAN_EXPERIENCED_SERVICE_TIME = 120;
     /**
      * Constant for average service time sigma for experienced server
      */
@@ -82,11 +82,11 @@ class App {
     /**
      * Constant for daily pay for primary servers
      */
-    final int DAILY_PAY_PRIMARY = 320;
+    final int DAILY_PAY_PRIMARY = 256;
     /**
      * Constant for daily pay for experienced servers
      */
-    final int DAILY_PAY_EXPERIENCED = 320;
+    final int DAILY_PAY_EXPERIENCED = 480;
     /**
      * Constant for workday duration in seconds
      */
@@ -252,7 +252,7 @@ class App {
         double minExperiencedServers = 0;
         double cost = 0;
         if (multiServerResults.size() > 0) {
-            for (Results rst : multiQueueResults) {
+            for (Results rst : multiServerResults) {
                 // retrieve result hashmap
                 var r = rst.getResults();
                 var cc = r.get("costPerCustomer");
