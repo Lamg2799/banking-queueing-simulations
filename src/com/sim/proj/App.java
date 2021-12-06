@@ -106,7 +106,7 @@ class App {
     /**
      * Constant for max number of execution (Replications)
      */
-    private final int MAX_LOOP = 500;
+    private final int MAX_LOOP = 10;
     /**
      * Constant for number of server to start trial with
      */
@@ -148,7 +148,7 @@ class App {
      */
     private void runSims() {
 
-        var args = new String[11];
+        var args = new String[12];
         // check if arguments are received or else use default values
         if (arguments != null && arguments.length == 3) {
             MAX_QUEUE_SIZE = Integer.parseInt(arguments[0]);
@@ -164,7 +164,7 @@ class App {
         args[8] = String.valueOf(SIGMA_EXPERIENCED_SERVICE_TIME); // # sigma service for experienced
         args[9] = String.valueOf(DAILY_PAY_PRIMARY); // # daily pay for primary
         args[10] = String.valueOf(DAILY_PAY_EXPERIENCED); // # daily pay for experienced
-
+        int trial = 1;
         // TESTS WITH ALL SERVER COMBINATIONS EXCEPT ONLY EXPERIENCED
         for (int primaryServerNum = SERVER_START_NUM; primaryServerNum < NUM_SERVERS_TO_TEST
                 + SERVER_START_NUM; primaryServerNum++) {
@@ -175,6 +175,10 @@ class App {
                 args[3] = String.valueOf(primaryServerNum); // # number of primary server
                 args[4] = String.valueOf(experiencedServerNum); // # number of experienced server
 
+                args[11] = String.valueOf(trial++);
+
+                System.out.println();
+                System.out.println(GREEN + "Trial # " + TEXT_RESET + args[11]);
                 // run multiserver sim
                 multiServerResults.add(multiserver.runSim(args));
 
@@ -189,7 +193,9 @@ class App {
             args[3] = "0"; // # number of primary servers
             args[4] = String.valueOf(serverNum);
             ; // number of experienced servers
-
+            args[11] = String.valueOf(trial++);
+            System.out.println();
+            System.out.println(GREEN + "Trial # " + TEXT_RESET + args[11]);
             // run multiserver sim
             multiServerResults.add(multiserver.runSim(args));
 
@@ -312,7 +318,7 @@ class App {
 
                 System.out.println();
 
-                printReport(rst.getResults());
+                printReport(rst.getResults(), rst.getName());
             }
         }
         System.out.println();
@@ -329,7 +335,7 @@ class App {
             for (Results rst : multiQueueResults) {
                 System.out.println();
 
-                printReport(rst.getResults());
+                printReport(rst.getResults(), rst.getName());
 
             }
         }
@@ -341,7 +347,7 @@ class App {
      * 
      * @param results the hashmap to print
      */
-    private void printReport(HashMap<String, Double> results) {
+    private void printReport(HashMap<String, Double> results, String name) {
 
         NumberFormat formatter = new DecimalFormat("#0.00");
         NumberFormat formattershort = new DecimalFormat("#0");
@@ -349,11 +355,7 @@ class App {
         System.out.println();
 
         // Displaying result
-        System.out.println(BLUE + "Server types " + TEXT_RESET + results.get("typeServers"));
-        System.out.println(BLUE + "Results with " + TEXT_RESET + formattershort.format(results.get("numPrimaryServers"))
-                + BLUE + " primary servers and "
-                + TEXT_RESET + formattershort.format(results.get("numExperiencedServers")) + BLUE
-                + " experienced servers");
+        System.out.println(name);
         System.out.println(BLUE + "Customers arrived = " + TEXT_RESET + Math.round(results.get("custArrived")));
 
         System.out.println(BLUE +

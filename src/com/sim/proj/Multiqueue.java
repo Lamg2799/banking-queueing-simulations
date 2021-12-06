@@ -10,14 +10,14 @@ import java.util.Random;
 import org.apache.commons.math3.distribution.PoissonDistribution;
 
 /**
- * Multi server multi queue implementaion as a part of our project for CSI4124 Simulation
+ * Multi server multi queue implementaion as a part of our project for CSI4124
+ * Simulation
  * and modelisation Created by:
  * 
- * @author 
+ * @author
  * @version 1.0
  */
 public class Multiqueue {
-
 
     /**
      * List of customers to go through simulation
@@ -69,7 +69,8 @@ public class Multiqueue {
     private double meanPrimaryS = 0;
 
     /**
-     * The desired primary server service time mean standart variation for the simulations
+     * The desired primary server service time mean standart variation for the
+     * simulations
      */
     private double sigmaPrimaryS = 0;
 
@@ -79,7 +80,8 @@ public class Multiqueue {
     private double meanExperiencedS = 0;
 
     /**
-     * The desired experienced server service time mean standart variation for the simulations
+     * The desired experienced server service time mean standart variation for the
+     * simulations
      */
     private double sigmaExperiencedS = 0;
 
@@ -170,10 +172,9 @@ public class Multiqueue {
         // Starts simulation
         System.out.println();
         System.out.print(
-            App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiqueue simulations with "
-                    + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
-                    + App.GREEN + " experienced servers... ");
-
+                App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiqueue simulations with "
+                        + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
+                        + App.GREEN + " experienced servers... ");
 
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -203,7 +204,7 @@ public class Multiqueue {
             }
 
             // record stats for customers who did not get served during work day
-            for (int i=0; i < customerQueues.length; i ++){
+            for (int i = 0; i < customerQueues.length; i++) {
                 while (!customerQueues[i].isEmpty()) {
                     var c = customerQueues[i].dequeue().getCustomer();
                     c.setWaitingTime(clock);
@@ -225,10 +226,11 @@ public class Multiqueue {
         return storeResults();
     }
 
-  /**
-   * Retrieves the configs initialyze objects
-   * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanDivider;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiencedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
-   */
+    /**
+     * Retrieves the configs initialyze objects
+     * 
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=meanDivider;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiencedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
+     */
     private void initialize(String[] args) {
 
         // initalize parameters variables
@@ -243,23 +245,29 @@ public class Multiqueue {
         sigmaExperiencedS = Integer.parseInt(args[8]);
         dailyPayPrimary = Integer.parseInt(args[9]);
         dailyPayExperienced = Integer.parseInt(args[10]);
+        var trial = Integer.parseInt(args[11]);
 
         numCustomersServed = 0;
         rdmS = new Random();
         numServer = numPrimary + numExperienced;
         customerQueues = new CustomerQueue[numServer];
         servers = new Server[numServer];
-        for (int i=0; i < customerQueues.length; i++) {
+        for (int i = 0; i < customerQueues.length; i++) {
             customerQueues[i] = new CustomerQueue();
         }
-        for (int i=0; i < numPrimary; i++) {
+        for (int i = 0; i < numPrimary; i++) {
 
             servers[i] = new Server(meanPrimaryS, sigmaPrimaryS, dailyPayPrimary, ServerType.PRIMARY);
         }
-        for (int i=numPrimary; i < (numPrimary+numExperienced); i++) {
+        for (int i = numPrimary; i < (numPrimary + numExperienced); i++) {
             servers[i] = new Server(meanExperiencedS, sigmaExperiencedS, dailyPayExperienced, ServerType.EXPERIENCED);
         }
-        results = new Results();
+        var name = App.GREEN + "Results for multiqueue simulations trial # " + App.TEXT_RESET + trial + App.GREEN
+                + " with "
+                + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
+                + App.GREEN + " experienced servers... ";
+
+        results = new Results(name);
     }
 
     /**
@@ -310,9 +318,9 @@ public class Multiqueue {
      */
     private double generateNextIA(double time) {
 
-        //compute mean according to quadractic equation based on time of day
+        // compute mean according to quadractic equation based on time of day
         var mean = (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
-  
+
         var pd = new PoissonDistribution(mean / meanDivider);
         var ret = Math.abs(pd.sample());
         // System.out.println("Random value " + ret);
@@ -321,14 +329,14 @@ public class Multiqueue {
     }
 
     /**
-     * Select the queue with the shortest line 
+     * Select the queue with the shortest line
      * 
      * @param queues The queue of each server
      * @return The queue with the shortest line
      */
     private CustomerQueue getShortestQueue(CustomerQueue[] queues) {
         CustomerQueue queueWithShortestLine = queues[0];
-        for (int i=1; i < queues.length; i++) {
+        for (int i = 1; i < queues.length; i++) {
             if (queues[i].numCustomers() < queueWithShortestLine.numCustomers()) {
                 queueWithShortestLine = queues[i];
             }
@@ -346,7 +354,8 @@ public class Multiqueue {
         // record customer arrival time
         c.setArrivalTime(clock);
         // check if any server idle
-        // Pick the queue with an idle server, which means empty line. This means the customer is not added to a waiting queue but is served immediately.
+        // Pick the queue with an idle server, which means empty line. This means the
+        // customer is not added to a waiting queue but is served immediately.
         Map<Integer, Integer> idleServers = new HashMap<Integer, Integer>();
         for (int i = 0; i < servers.length; i++) {
             if (servers[i].getStatus() == Status.IDLE) {
@@ -377,7 +386,8 @@ public class Multiqueue {
             currentServer.setStatus(Status.BUSY);
             c.setServerIndex(index);
             // schedule departure event
-            double nextS = Math.abs(rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
+            double nextS = Math.abs(
+                    rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
             // compile server busy time
             currentServer.addToTotalServiceTime(nextS);
             // add departure event
@@ -423,7 +433,8 @@ public class Multiqueue {
 
             // schedule departure event
 
-            double nextS = Math.abs(rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
+            double nextS = Math.abs(
+                    rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
             currentServer.addToTotalServiceTime(nextS);
             eventList.add(new Event(EventType.DEPARTURE, nextS + clock, c));
             sort();
@@ -501,13 +512,13 @@ public class Multiqueue {
         results.addResult("custArrived", (double) numCustomersArrived / maxloop);
         int maxQueueSize = 0;
         int totalCost = 0;
-        for (int i=0; i < customerQueues.length; i++) {
+        for (int i = 0; i < customerQueues.length; i++) {
             int currentSize = customerQueues[i].getMaxQS();
             if (currentSize > maxQueueSize) {
                 maxQueueSize = currentSize;
             }
         }
-        for (int i=0; i < servers.length; i++) {
+        for (int i = 0; i < servers.length; i++) {
             totalCost += servers[i].getDailyPay();
         }
         results.addResult("maxQueue", (double) maxQueueSize);
