@@ -15,23 +15,31 @@ public class Results {
     /**
      * Hashmap containing all generated poisson random values
      */
-    private LinkedList< LinkedList<Double>> resultsIaTime;
+    private LinkedList<LinkedList<Double>> resultsIaTime;
     /**
      * List containing the average waiting time for each execution
      */
-    private LinkedList<Double> waitingTime;
+    private LinkedList<Double> waitingTimeAvg;
     /**
      * List containing the average system time for each execution
      */
-    private LinkedList<Double> systemTime;
+    private LinkedList<Double> systemTimeAvg;
     /**
-     * List containing the average waiting variance time for each execution
+     * List containing the average waiting time variance for each execution
      */
-    private LinkedList<Double> waitingTimeAvgVar;
+    private LinkedList<Double> waitingTimeAvgAvgVar;
     /**
      * List containing the average system time variance for each execution
      */
-    private LinkedList<Double> systemTimeAvgVar;
+    private LinkedList<Double> systemTimeAvgAvgVar;
+    /**
+     * List containing the average interarrival time for each execution
+     */
+    private LinkedList<Double> iaAvg;
+    /**
+     * List containing the average interarrival time variance for each execution
+     */
+    private LinkedList<Double> iaAvgVar;
     /**
      * name of the results
      */
@@ -44,10 +52,12 @@ public class Results {
         this.name = name;
         results = new HashMap<>();
         resultsIaTime = new LinkedList<>();
-        waitingTime = new LinkedList<>();
-        systemTime = new LinkedList<>();
-        waitingTimeAvgVar = new LinkedList<>();
-        systemTimeAvgVar = new LinkedList<>();
+        waitingTimeAvg = new LinkedList<>();
+        systemTimeAvg = new LinkedList<>();
+        waitingTimeAvgAvgVar = new LinkedList<>();
+        systemTimeAvgAvgVar = new LinkedList<>();
+        iaAvg = new LinkedList<>();
+        iaAvgVar = new LinkedList<>();
     }
 
     /**
@@ -63,12 +73,34 @@ public class Results {
     /**
      * to store inter-arrival random generated values ( for possible reference in
      * the report)
+     * *
      * 
-     * @param key   the result key index
      * @param value the list of random generated values
      */
     public void addIaTimeResult(LinkedList<Double> value) {
-        resultsIaTime.add( value);
+        resultsIaTime.add(value);
+    }
+
+    /**
+     * to store inter-arrival random generated values ( for possible reference in
+     * the report)
+     * *
+     * 
+     * @param value the list of random generated values
+     */
+    public void addIaTimeAvg(double value) {
+        iaAvg.add(value);
+    }
+
+    /**
+     * to store inter-arrival random generated values ( for possible reference in
+     * the report)
+     * *
+     * 
+     * @param value the list of random generated values
+     */
+    public void addIaTimeAvgVar(double value) {
+        iaAvgVar.add(value);
     }
 
     /**
@@ -76,8 +108,8 @@ public class Results {
      * 
      * @param value the average waiting time for this execution
      */
-    public void addWaitingTime(double value) {
-        waitingTime.add(value);
+    public void addWaitingTimeAvg(double value) {
+        waitingTimeAvg.add(value);
     }
 
     /**
@@ -86,7 +118,7 @@ public class Results {
      * @param value the average waiting time variance for this execution
      */
     public void addWaitingTimeAvgVar(double value) {
-        waitingTimeAvgVar.add(value);
+        waitingTimeAvgAvgVar.add(value);
     }
 
     /**
@@ -94,8 +126,8 @@ public class Results {
      * 
      * @param value the average system time for this execution
      */
-    public void addSystemTime(double value) {
-        systemTime.add(value);
+    public void addSystemTimeAvg(double value) {
+        systemTimeAvg.add(value);
     }
 
     /**
@@ -104,7 +136,7 @@ public class Results {
      * @param value the average system time variance for this execution
      */
     public void addSystemTimeAvgVar(double value) {
-        systemTimeAvgVar.add(value);
+        systemTimeAvgAvgVar.add(value);
     }
 
     /**
@@ -130,44 +162,62 @@ public class Results {
      * 
      * @return resultsIaTime
      */
-    public LinkedList< LinkedList<Double>> getResultsIaTime() {
+    public LinkedList<LinkedList<Double>> getResultsIaTime() {
         return resultsIaTime;
+    }
+
+    /**
+     * Returns the hashmap containing all ramdomly generated interarrival values
+     * 
+     * @return resultsIaTimeAvg
+     */
+    public LinkedList<Double> getResultsIaTimeAvg() {
+        return iaAvg;
+    }
+
+    /**
+     * Returns the hashmap containing all ramdomly generated interarrival values
+     * 
+     * @return resultsIaTimeAvgVar
+     */
+    public LinkedList<Double> getResultsIaTimeAvgVar() {
+        return iaAvgVar;
     }
 
     /**
      * Returns the waiting time average for each execution
      * 
-     * @return waitingTime
+     * @return waitingTimeAvg
      */
-    public LinkedList<Double> getWaitingTime() {
-        return waitingTime;
+    public LinkedList<Double> getWaitingTimeAvg() {
+        return waitingTimeAvg;
     }
 
     /**
      * Returns the system time average for each execution
      * 
-     * @return systemTime
+     * @return systemTimeAvg
      */
-    public LinkedList<Double> getSystemTime() {
-        return systemTime;
+    public LinkedList<Double> getSystemTimeAvg() {
+        return systemTimeAvg;
     }
 
     /**
      * Returns the waiting time average variance for each execution
      * 
-     * @return waitingTimeAvgVar
+     * @return waitingTimeAvgAvgVar
      */
     public LinkedList<Double> getWaitingTimeAvgVar() {
-        return waitingTimeAvgVar;
+        return waitingTimeAvgAvgVar;
     }
 
     /**
      * Returns the system time average variancee for each execution
      * 
-     * @return systemTimeAvgVar
+     * @return systemTimeAvgAvgVar
      */
     public LinkedList<Double> getSystemTimeAvgVar() {
-        return systemTimeAvgVar;
+        return systemTimeAvgAvgVar;
     }
 
 }
