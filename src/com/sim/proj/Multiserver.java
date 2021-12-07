@@ -156,6 +156,18 @@ public class Multiserver {
      * The Z value use to compute confidence interval
      */
     private final double Z = 1.96;// from normal table
+    /**
+     * The interarrival the random values
+     */
+    private LinkedList<Double> randomValues = null;
+    /**
+     * The current trial
+     */
+    private int trial = 0;
+    /**
+     * The current result level
+     */
+    private int resultLevel = 0;
 
     /**
      * Run simulation main method,
@@ -169,12 +181,13 @@ public class Multiserver {
         initialize(args);
 
         // Starts simulation
-        System.out.println();
-        System.out.print(
-                App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiserver simulations with "
-                        + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
-                        + App.GREEN + " experienced servers... ");
-
+        if (resultLevel > 1 && resultLevel < 5) {
+            System.out.println();
+            System.out.print(
+                    App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiserver simulations with "
+                            + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
+                            + App.GREEN + " experienced servers... ");
+        }
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
 
@@ -216,9 +229,9 @@ public class Multiserver {
             totalClock += clock;
             currentLoop++;
         }
-
-        System.out.println("Done" + App.TEXT_RESET);
-
+        if (resultLevel > 1 && resultLevel < 5) {
+            System.out.println("Done" + App.TEXT_RESET);
+        }
         // Generate the outputs
 
         return storeResults();
@@ -243,7 +256,8 @@ public class Multiserver {
         sigmaExperiencedS = Integer.parseInt(args[8]);
         dailyPayPrimary = Integer.parseInt(args[9]);
         dailyPayExperienced = Integer.parseInt(args[10]);
-        var trial = Integer.parseInt(args[11]);
+        trial = Integer.parseInt(args[11]);
+        resultLevel = Integer.parseInt(args[12]);
 
         numCustomersServed = 0;
         rdmS = new Random();
@@ -273,6 +287,7 @@ public class Multiserver {
         clock = 0;
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
+        randomValues = new LinkedList<>();
 
         for (int i = 0; i < servers.length; i++) {
             servers[i].setStatus(Status.IDLE);
@@ -316,8 +331,8 @@ public class Multiserver {
         var mean = (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
 
         var pd = new PoissonDistribution(mean / meanDivider);
-        var ret = Math.abs(pd.sample());
-        // System.out.println("Random value " + ret);
+        var ret = Math.abs((double) pd.sample());
+        randomValues.add(ret);
 
         return ret;
     }
@@ -373,6 +388,7 @@ public class Multiserver {
             sort();
 
         } else {
+            
             // System.out.println("Processing arrival customer id " + c.getId() + " at " +
             // clock + " enqueued");
             // add to waiting line
@@ -466,30 +482,37 @@ public class Multiserver {
         // compute avg waiting and system time
         var waitingAcc = 0.0;
         var systemAcc = 0.0;
+        var arrivalAcc = 0.0;
 
         for (Customer customer : customers) {
             waitingAcc += customer.getWaitingTime();
             systemAcc += customer.getTotalSystemTime();
+            arrivalAcc += customer.getInterArrivalValues();
         }
         var waitingTimeAvg = waitingAcc / (double) customers.size();
         var systemTimeAvg = systemAcc / (double) customers.size();
+        var interarrivalTimeAvg = arrivalAcc / (double) customers.size();
 
         // compute variance
         var waitingVarAcc = 0.0;
         var systemVarAcc = 0.0;
+        var interarrivalVarAcc = 0.0;
         for (Customer customer : customers) {
             waitingVarAcc += Math.pow(customer.getWaitingTime() - waitingTimeAvg, 2);
             systemVarAcc += Math.pow(customer.getTotalSystemTime() - systemTimeAvg, 2);
+            interarrivalVarAcc += Math.pow(customer.getInterArrivalValues() - interarrivalTimeAvg, 2);
         }
         var waitingTimeAvgVar = waitingVarAcc / (double) customers.size();
         var systemTimeAvgVar = systemVarAcc / (double) customers.size();
-
+        var interarrivalAvgVar = interarrivalVarAcc / (double) customers.size();
         // store in results
-
-        results.addWaitingTime(waitingAcc);
-        results.addSystemTime(systemAcc);
+        results.addIaTimeResult(randomValues);
+        results.addWaitingTimeAvg(waitingAcc);
+        results.addSystemTimeAvg(systemAcc);
         results.addWaitingTimeAvgVar(waitingTimeAvgVar);
         results.addSystemTimeAvgVar(systemTimeAvgVar);
+        results.addIaTimeAvg(interarrivalTimeAvg);
+        results.addIaTimeAvgVar(interarrivalAvgVar);
     }
 
     /**
@@ -568,13 +591,13 @@ public class Multiserver {
         }
 
         // compute total waiting time
-        for (double avgwait : results.getWaitingTime()) {
+        for (double avgwait : results.getWaitingTimeAvg()) {
             ret[0] += avgwait;
         }
         ret[0] = ret[0] / maxloop;
 
         // compute total waiting time variance
-        for (double avgwait : results.getWaitingTime()) {
+        for (double avgwait : results.getWaitingTimeAvg()) {
             ret[1] += Math.pow(avgwait - ret[0], 2);
         }
         ret[1] = ret[1] / (maxloop - 1);
@@ -584,13 +607,13 @@ public class Multiserver {
         ret[3] = ret[1] / cust;
 
         // compute total system time
-        for (double avgsyst : results.getSystemTime()) {
+        for (double avgsyst : results.getSystemTimeAvg()) {
             ret[4] += avgsyst;
         }
         ret[4] = ret[4] / maxloop;
 
         // compute total system time variance
-        for (double avgsyst : results.getSystemTime()) {
+        for (double avgsyst : results.getSystemTimeAvg()) {
 
             ret[5] += Math.pow(avgsyst - ret[4], 2);
         }

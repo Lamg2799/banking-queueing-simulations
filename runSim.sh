@@ -9,9 +9,15 @@ libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 
 #arguments
 meanDivider=1
+<<<<<<< HEAD
 maxQueueSize=2
 maxTrial=6
 resultLevel=1
+=======
+maxQueueSize=4
+maxTrial=6
+resultLevel=0
+>>>>>>> show_random_values
 
 echo "Starting Multiserver"
 echo "Compiling..."
@@ -31,7 +37,11 @@ file="./results_$time"
 if ((resultLevel > 4)); then
     file="./results_$time.csv"
 fi
+<<<<<<< HEAD
 cd "$localPath"/bin && java "$mainClass" $meanDivider $maxQueueSize $maxTrial $resultLevel >"$file"
+=======
+cd "$localPath" && java -jar ./"$jarName" $meanDivider $maxQueueSize $maxTrial $resultLevel >"$file"
+>>>>>>> show_random_values
 echo
 echo "Simulation completed"
 echo

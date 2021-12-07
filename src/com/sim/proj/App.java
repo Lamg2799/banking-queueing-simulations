@@ -74,7 +74,7 @@ class App {
      * with 1.0 value it will simulate using the same datas as the
      * reference document
      */
-    private double MEAN_DIVIDER = 1; // default value
+    private int MEAN_DIVIDER = 1; // default value
     /**
      * Constant for average service time for primary server
      */
@@ -112,6 +112,10 @@ class App {
      */
     private final int SERVER_START_NUM = 1;
     /**
+     * The level of result to print
+     */
+    private int resultLevel = 1;// default value
+    /**
      * Startup input arguments array
      */
     private String[] arguments;
@@ -148,23 +152,25 @@ class App {
      */
     private void runSims() {
 
-        var args = new String[12];
+        var args = new String[13];
         // check if arguments are received or else use default values
-        if (arguments != null && arguments.length == 3) {
+        if (arguments != null && arguments.length == 4) {
             MAX_QUEUE_SIZE = Integer.parseInt(arguments[0]);
-            MEAN_DIVIDER = Double.parseDouble(arguments[1]);
+            MEAN_DIVIDER = Integer.parseInt(arguments[1]);
             NUM_SERVERS_TO_TEST = Integer.parseInt(arguments[2]);
+            resultLevel = Integer.parseInt(arguments[3]); // 0 to 5.
         }
         args[0] = String.valueOf(MAX_LOOP);// # num execution should be set to 500
         args[1] = String.valueOf(MAX_CLOCK); // #max clock
-        args[2] = String.valueOf((int) MEAN_DIVIDER); // #mean divider
+        args[2] = String.valueOf(MEAN_DIVIDER); // #mean divider
         args[5] = String.valueOf(MEAN_PRIMARY_SERVICE_TIME); // # mean service for primary
         args[6] = String.valueOf(SIGMA_PRIMARY_SERVICE_TIME); // # sigma service for primary
         args[7] = String.valueOf(MEAN_EXPERIENCED_SERVICE_TIME); // # mean service for experienced
         args[8] = String.valueOf(SIGMA_EXPERIENCED_SERVICE_TIME); // # sigma service for experienced
         args[9] = String.valueOf(DAILY_PAY_PRIMARY); // # daily pay for primary
         args[10] = String.valueOf(DAILY_PAY_EXPERIENCED); // # daily pay for experienced
-        int trial = 1;
+        args[12] = String.valueOf(resultLevel);
+        var trial = 1;
         // TESTS WITH ALL SERVER COMBINATIONS EXCEPT ONLY EXPERIENCED
         for (int primaryServerNum = SERVER_START_NUM; primaryServerNum < NUM_SERVERS_TO_TEST
                 + SERVER_START_NUM; primaryServerNum++) {
@@ -176,14 +182,32 @@ class App {
                 args[4] = String.valueOf(experiencedServerNum); // # number of experienced server
 
                 args[11] = String.valueOf(trial++);
+                if (resultLevel < 5) {
+                    if (resultLevel > 1) {
 
-                System.out.println();
-                System.out.println(GREEN + "Trial # " + TEXT_RESET + args[11]);
+                        System.out.println();
+                        System.out.println(GREEN + "Trial # " + TEXT_RESET + args[11]);
+
+                    } else {
+                        if (resultLevel > 0) {
+                            System.out.print(GREEN + "Trial # " + TEXT_RESET + args[11] + GREEN + "...");
+                        } else {
+                            System.out.print(GREEN + ".");
+                        }
+                    }
+                }
                 // run multiserver sim
                 multiServerResults.add(multiserver.runSim(args));
 
                 // run multiqueue sim
                 multiQueueResults.add(multiqueue.runSim(args));
+
+                if (resultLevel < 2) {
+
+                    if (resultLevel > 0) {
+                        System.out.print(GREEN + "Done " + TEXT_RESET);
+                    }
+                }
             }
         }
         // TESTS WITH ONLY EXPERIENCED SERVERS
@@ -194,23 +218,52 @@ class App {
             args[4] = String.valueOf(serverNum);
             ; // number of experienced servers
             args[11] = String.valueOf(trial++);
-            System.out.println();
-            System.out.println(GREEN + "Trial # " + TEXT_RESET + args[11]);
+            if (resultLevel < 5) {
+                if (resultLevel > 1) {
+
+                    System.out.println();
+                    System.out.println(GREEN + "Trial # " + TEXT_RESET + args[11]);
+
+                } else {
+                    if (resultLevel > 0) {
+                        System.out.print(GREEN + "Trial # " + TEXT_RESET + args[11] + GREEN + "...");
+                    } else {
+                        System.out.print(GREEN + ".");
+                    }
+                }
+            }
             // run multiserver sim
             multiServerResults.add(multiserver.runSim(args));
 
             // run multiqueue sim
             multiQueueResults.add(multiqueue.runSim(args));
 
-        }
+            if (resultLevel < 2) {
 
+                if (resultLevel > 0) {
+                    System.out.print(GREEN + "Done " + TEXT_RESET);
+                }
+            }
+
+        }
+        System.out.println();
+        System.out.println();
         // printing results for all trials
         // finding optimal parameters based on MAX_QUEUE_SIZE
         try {
-            printMultiServerResults();
-            computeMultiserverOptimal();
-            printMultiQueueResults();
-            computeMultiqueueOptimal();
+            if (resultLevel > 0) {
+                printMultiServerResults();
+            }
+            if (resultLevel < 5) {
+                computeMultiserverOptimal();
+            }
+            if (resultLevel > 0) {
+                printMultiQueueResults();
+            }
+            if (resultLevel < 5) {
+
+                computeMultiqueueOptimal();
+            }
         } catch (Exception e) {
 
         }
@@ -311,17 +364,26 @@ class App {
      * loops through all the results and call print function
      */
     private void printMultiServerResults() {
-        System.out.println();
-        System.out.println(GREEN + "Printing multiserver results..." + TEXT_RESET);
+
         if (multiServerResults.size() > 0) {
             for (Results rst : multiServerResults) {
 
                 System.out.println();
+                if (resultLevel == 5) {
+                    printRandomValues(rst);
+                } else {
+                    printReport(rst.getResults(), rst.getName());
+                    if (resultLevel > 2) {
+                        System.out.println();
+                        printAvgPerExecutions(rst);
+                        System.out.println();
+                        if (resultLevel > 3) {
+                            printRandomValues(rst);
+                        }
 
-                printReport(rst.getResults(), rst.getName());
-               
-               
-               
+                    }
+                }
+
             }
         }
         System.out.println();
@@ -329,17 +391,111 @@ class App {
     }
 
     /**
+     * to print random generated values
+     * 
+     * @param rst
+     */
+    private void printRandomValues(Results rst) {
+
+        var i = 1;
+        for (var rv : rst.getResultsIaTime()) {
+            if (resultLevel < 5) {
+                System.out.println(
+                        GREEN + "Printing random values for execution " + TEXT_RESET + (i++) + GREEN + "..."
+                                + TEXT_RESET);
+            }
+            System.out.println();
+            for (var value : rv) {
+
+                System.out.print(value + " ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+
+    }
+
+    /**
+     * to print average per executions
+     * 
+     * @param rst
+     */
+    private void printAvgPerExecutions(Results rst) {
+
+        System.out.println(GREEN + "Printing average waiting time for each executions..." + TEXT_RESET);
+        System.out.println();
+
+        for (var value : rst.getWaitingTimeAvg()) {
+
+            System.out.print(value + " ");
+        }
+
+        System.out.println();
+        System.out.println(GREEN + "Printing average waiting time variance for each executions..." + TEXT_RESET);
+        System.out.println();
+
+        for (var value : rst.getSystemTimeAvg()) {
+
+            System.out.print(value + " ");
+        }
+        System.out.println();
+        System.out.println(GREEN + "Printing average system time for each executions..." + TEXT_RESET);
+        System.out.println();
+
+        for (var value : rst.getSystemTimeAvg()) {
+
+            System.out.print(value + " ");
+        }
+        System.out.println();
+        System.out.println(GREEN + "Printing average system time variance for each executions..." + TEXT_RESET);
+        System.out.println();
+
+        for (var value : rst.getSystemTimeAvgVar()) {
+
+            System.out.print(value + " ");
+        }
+        System.out.println();
+        ///
+        System.out.println(GREEN + "Printing average interarrival time for each executions..." + TEXT_RESET);
+        System.out.println();
+
+        for (var value : rst.getResultsIaTimeAvg()) {
+
+            System.out.print(value + " ");
+        }
+        System.out.println();
+        System.out.println(GREEN + "Printing average interarrival time variance for each executions..." + TEXT_RESET);
+        System.out.println();
+
+        for (var value : rst.getResultsIaTimeAvgVar()) {
+
+            System.out.print(value + " ");
+        }
+        System.out.println();
+    }
+
+    /**
      * loops through all the results and call print function
      */
     private void printMultiQueueResults() {
-        System.out.println();
-        System.out.println(GREEN + "Printing multiqueue results..." + TEXT_RESET);
+
         if (multiQueueResults.size() > 0) {
             for (Results rst : multiQueueResults) {
                 System.out.println();
+                if (resultLevel == 5) {
+                    printRandomValues(rst);
+                } else {
+                    printReport(rst.getResults(), rst.getName());
+                    if (resultLevel > 2) {
+                        System.out.println();
+                        printAvgPerExecutions(rst);
+                        System.out.println();
+                        if (resultLevel > 3) {
+                            printRandomValues(rst);
+                        }
 
-                printReport(rst.getResults(), rst.getName());
-
+                    }
+                }
             }
         }
         System.out.println();
