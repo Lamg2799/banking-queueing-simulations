@@ -376,9 +376,24 @@ public class Multiserver {
             // System.out.println("Processing arrival customer id " + c.getId() + " at " +
             // clock + " enqueued");
             // add to waiting line
-            customersQ.enqueue(event);
+            if (!isCustomerTurning()) {
+                customersQ.enqueue(event);
+            }
         }
 
+    }
+
+    private boolean isCustomerTurning() {
+        var s = (double) customersQ.numCustomers();
+
+        var prob = Math.pow(s, 2) * 0.015 - 0.5 * s + 3;
+        var rg = rdm.nextInt(100);
+
+        if (rg < prob) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

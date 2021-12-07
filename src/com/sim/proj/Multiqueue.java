@@ -365,7 +365,9 @@ public class Multiqueue {
         // If no servers are idle, pick the shortest line.
         if (idleServers.isEmpty()) {
             CustomerQueue shortestQueue = getShortestQueue(customerQueues);
-            shortestQueue.enqueue(event);
+            if (!isCustomerTurning(shortestQueue)) {
+                shortestQueue.enqueue(event);
+            }
         } else {
             int index = 0;
 
@@ -395,6 +397,19 @@ public class Multiqueue {
             sort();
 
         }
+    }
+
+    private boolean isCustomerTurning(CustomerQueue shortestQueue) {
+        var s = (double) shortestQueue.numCustomers();
+
+        var prob = Math.pow(s, 2) * 0.015 - 0.5 * s + 3;
+        var rg = rdm.nextInt(100);
+
+        if (rg < prob) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
