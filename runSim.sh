@@ -31,7 +31,7 @@ file="./results_$time"
 if ((resultLevel > 4)); then
     file="./results_$time.csv"
 fi
-cd "$localPath" && java -jar ./"$jarName" $meanDivider $maxQueueSize $maxTrial $resultLevel >"$file"
+cd "$localPath"/bin && java "$mainClass" $meanDivider $maxQueueSize $maxTrial $resultLevel >"$file"
 echo
 echo "Simulation completed"
 echo
