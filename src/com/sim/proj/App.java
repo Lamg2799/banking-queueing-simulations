@@ -106,7 +106,7 @@ class App {
     /**
      * Constant for max number of execution (Replications)
      */
-    private final int MAX_LOOP = 10;
+    private final int MAX_LOOP = 500;
     /**
      * Constant for number of server to start trial with
      */
@@ -305,7 +305,7 @@ class App {
             if (cost > 0) {
                 System.out.println(GREEN + "The optimal trial with a mean divider of " + TEXT_RESET + MEAN_DIVIDER
                         + GREEN + " is: ");
-                System.out.println(trial.substring(41, 115)
+                System.out.println(trial.substring(42, 115)
                         + GREEN + "experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
                         + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }
@@ -320,7 +320,7 @@ class App {
     private void computeMultiserverOptimal() {
 
         // find lowest cost within restriction
-        System.out.println(GREEN + "Finding optimal result for multiserver..." + TEXT_RESET);
+        System.out.println(GREEN + "Finding optimal result for singlequeue multiserver..." + TEXT_RESET);
         System.out.println();
         double mincost = Double.MAX_VALUE;
 
@@ -348,8 +348,8 @@ class App {
             if (cost > 0) {
                 System.out.println(GREEN + "The optimal trial with a mean divider of " + TEXT_RESET + MEAN_DIVIDER
                         + GREEN + " is: ");
-                System.out.println(trial.substring(42, 116)
-                        + GREEN + "experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
+                System.out.println(trial.substring(55, 102)
+                        + GREEN + " with a total cost of " + TEXT_RESET + formatter.format(cost)
                         + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }
         }

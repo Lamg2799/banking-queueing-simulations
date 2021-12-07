@@ -185,9 +185,8 @@ public class Multiserver {
         if (resultLevel > 1 && resultLevel < 5) {
             System.out.println();
             System.out.print(
-                    App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiserver simulations with "
-                            + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
-                            + App.GREEN + " experienced servers... ");
+                    App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " singlequeue multiserver simulations with "
+                            + App.TEXT_RESET + args[3] + App.GREEN + " servers... ");
         }
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -271,10 +270,9 @@ public class Multiserver {
         for (int i = numPrimary; i < (numPrimary + numExperienced); i++) {
             servers[i] = new Server(meanExperiencedS, sigmaExperiencedS, dailyPayExperienced, ServerType.EXPERIENCED);
         }
-        var name = App.GREEN + "Results for multiserver simulations trial # " + App.TEXT_RESET + trial + App.GREEN
+        var name = App.GREEN + "Results for singlequeue multiserver simulations trial # " + App.TEXT_RESET + trial + App.GREEN
                 + " with "
-                + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
-                + App.GREEN + " experienced servers... ";
+                + App.TEXT_RESET + args[3] + App.GREEN + " servers... ";
 
         results = new Results(name);
     }
