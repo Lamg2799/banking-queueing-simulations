@@ -155,8 +155,8 @@ class App {
         var args = new String[13];
         // check if arguments are received or else use default values
         if (arguments != null && arguments.length == 4) {
-            MAX_QUEUE_SIZE = Integer.parseInt(arguments[0]);
-            MEAN_DIVIDER = Integer.parseInt(arguments[1]);
+            MEAN_DIVIDER = Integer.parseInt(arguments[0]);
+            MAX_QUEUE_SIZE = Integer.parseInt(arguments[1]);
             NUM_SERVERS_TO_TEST = Integer.parseInt(arguments[2]);
             resultLevel = Integer.parseInt(arguments[3]); // 0 to 5.
         }
@@ -278,10 +278,11 @@ class App {
 
         // find lowest cost within restriction
         System.out.println(GREEN + "Finding optimal result for multiqueue..." + TEXT_RESET);
+        System.out.println();
         double mincost = Double.MAX_VALUE;
-        double minPrimaryServers = 0;
-        double minExperiencedServers = 0;
+
         double cost = 0;
+        var trial = "";
         if (multiQueueResults.size() > 0) {
             for (Results rst : multiQueueResults) {
                 // retrieve result hashmap
@@ -290,29 +291,26 @@ class App {
                 var qsize = r.get("maxQueue");
                 if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
                     mincost = cc;
-                    minPrimaryServers = r.get("numPrimaryServers");
-                    minExperiencedServers = r.get("numExperiencedServers");
+
                     cost = r.get("totalCost");
+                    trial = rst.getName();
                 } else if (MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
-                    minPrimaryServers = r.get("numPrimaryServers");
-                    minExperiencedServers = r.get("numExperiencedServers");
+
                     cost = r.get("totalCost");
+                    trial = rst.getName();
                 }
 
             }
             if (cost > 0) {
-                System.out.println(BLUE + "The optimal number of servers with a mean divider of " + TEXT_RESET
-                        + MEAN_DIVIDER
-                        + BLUE + " and a maximum queue size of " + TEXT_RESET
-                        + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE)
-                        + BLUE + " for the multiqueue system is " + TEXT_RESET
-                        + (int) minPrimaryServers + BLUE + " primary servers and " + TEXT_RESET
-                        + (int) minExperiencedServers
-                        + BLUE + " experienced  servers with a total cost of " + TEXT_RESET + formatter.format(cost)
-                        + BLUE + "$ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + "$");
+                System.out.println(GREEN + "The optimal trial with a mean divider of " + TEXT_RESET + MEAN_DIVIDER
+                        + GREEN + " is: ");
+                System.out.println(trial.substring(42, 114)
+                        + GREEN + "experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
+                        + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }
         }
+        System.out.println();
     }
 
     /**
@@ -322,11 +320,12 @@ class App {
     private void computeMultiserverOptimal() {
 
         // find lowest cost within restriction
-        System.out.println(GREEN + "Finding optimal result for multiserver..." + TEXT_RESET);
+        System.out.println(GREEN + "Finding optimal result for singlequeue multiserver..." + TEXT_RESET);
+        System.out.println();
         double mincost = Double.MAX_VALUE;
-        double minPrimaryServers = 0;
-        double minExperiencedServers = 0;
+
         double cost = 0;
+        var trial = "";
         if (multiServerResults.size() > 0) {
             for (Results rst : multiServerResults) {
                 // retrieve result hashmap
@@ -335,29 +334,26 @@ class App {
                 var qsize = r.get("maxQueue");
                 if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
                     mincost = cc;
-                    minPrimaryServers = r.get("numPrimaryServers");
-                    minExperiencedServers = r.get("numExperiencedServers");
+
                     cost = r.get("totalCost");
+                    trial = rst.getName();
                 } else if (MAX_QUEUE_SIZE < 0) {
                     mincost = cc;
-                    minPrimaryServers = r.get("numPrimaryServers");
-                    minExperiencedServers = r.get("numExperiencedServers");
+
                     cost = r.get("totalCost");
+                    trial = rst.getName();
                 }
 
             }
             if (cost > 0) {
-                System.out.println(BLUE + "The optimal number of servers with a mean divider of " + TEXT_RESET
-                        + MEAN_DIVIDER
-                        + BLUE + " and a maximum queue size of " + TEXT_RESET
-                        + (MAX_QUEUE_SIZE < 0 ? "infinite" : MAX_QUEUE_SIZE)
-                        + BLUE + " for the multiqueue system is " + TEXT_RESET
-                        + (int) minPrimaryServers + BLUE + " primary servers and " + TEXT_RESET
-                        + (int) minExperiencedServers
-                        + BLUE + " experienced  servers with a total cost of " + TEXT_RESET + formatter.format(cost)
-                        + BLUE + "$ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + "$");
+                System.out.println(GREEN + "The optimal trial with a mean divider of " + TEXT_RESET + MEAN_DIVIDER
+                        + GREEN + " is: ");
+                System.out.println(trial.substring(55, 102)
+                        + GREEN + " with a total cost of " + TEXT_RESET + formatter.format(cost)
+                        + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }
         }
+        System.out.println();
     }
 
     /**

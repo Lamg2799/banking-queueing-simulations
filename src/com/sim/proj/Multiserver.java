@@ -169,6 +169,7 @@ public class Multiserver {
      */
     private int resultLevel = 0;
 
+    
     /**
      * Run simulation main method,
      * 
@@ -184,9 +185,8 @@ public class Multiserver {
         if (resultLevel > 1 && resultLevel < 5) {
             System.out.println();
             System.out.print(
-                    App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " multiserver simulations with "
-                            + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
-                            + App.GREEN + " experienced servers... ");
+                    App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN + " singlequeue multiserver simulations with "
+                            + App.TEXT_RESET + args[3] + App.GREEN + " servers... ");
         }
         // Loops to run multiple simulations
         while (currentLoop <= numMaxLoop) {
@@ -270,10 +270,9 @@ public class Multiserver {
         for (int i = numPrimary; i < (numPrimary + numExperienced); i++) {
             servers[i] = new Server(meanExperiencedS, sigmaExperiencedS, dailyPayExperienced, ServerType.EXPERIENCED);
         }
-        var name = App.GREEN + "Results for multiserver simulations trial # " + App.TEXT_RESET + trial + App.GREEN
+        var name = App.GREEN + "Results for singlequeue multiserver simulations trial # " + App.TEXT_RESET + trial + App.GREEN
                 + " with "
-                + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
-                + App.GREEN + " experienced servers... ";
+                + App.TEXT_RESET + args[3] + App.GREEN + " servers... ";
 
         results = new Results(name);
     }
@@ -388,12 +387,30 @@ public class Multiserver {
             sort();
 
         } else {
+
             // System.out.println("Processing arrival customer id " + c.getId() + " at " +
             // clock + " enqueued");
             // add to waiting line
-            customersQ.enqueue(event);
+            if (!isCustomerTurning()) {
+                customersQ.enqueue(event);
+            }
         }
 
+    }
+
+    private boolean isCustomerTurning() {
+        var s = (double) customersQ.numCustomers();
+
+        var prob = Math.pow(s, 2) * 0.015 - 0.5 * s + 3;
+        var rg = rdm.nextInt(100);
+        if (prob < 0) {
+            prob = 0;
+        }
+        if (rg < prob) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -611,11 +628,11 @@ public class Multiserver {
         ret[8] = (Z * Math.sqrt(ret[1])) / Math.sqrt(maxloop);
         ret[9] = (Z * Math.sqrt(ret[5])) / Math.sqrt(maxloop);
 
-        if (ret[8] > 100){
+        if (ret[8] > 100) {
             ret[8] = 100;
         }
 
-        if (ret[9] > 100){
+        if (ret[9] > 100) {
             ret[9] = 100;
         }
 
