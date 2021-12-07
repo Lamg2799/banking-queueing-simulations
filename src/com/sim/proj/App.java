@@ -348,8 +348,8 @@ class App {
             if (cost > 0) {
                 System.out.println(GREEN + "The optimal trial with a mean divider of " + TEXT_RESET + MEAN_DIVIDER
                         + GREEN + " is: ");
-                System.out.println(trial.substring(55, 102)
-                        + GREEN + " with a total cost of " + TEXT_RESET + formatter.format(cost)
+                        System.out.println(trial.substring(55, 127)
+                        + GREEN + "experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
                         + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }
         }
