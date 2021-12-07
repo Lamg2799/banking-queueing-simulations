@@ -11,7 +11,7 @@ libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 meanDivider=1
 maxQueueSize=2
 maxTrial=6
-resultLevel=1
+resultLevel=4
 
 echo "Starting Multiserver"
 echo "Compiling..."
