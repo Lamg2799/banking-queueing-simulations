@@ -8,10 +8,10 @@ jarName="multiserver.jar"
 libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 
 #arguments
-meanDivider=1
-maxQueueSize=2
+meanDivider=3
+maxQueueSize=5
 maxTrial=6
-resultLevel=1
+resultLevel=0
 
 echo "Starting Multiserver"
 echo "Compiling..."
