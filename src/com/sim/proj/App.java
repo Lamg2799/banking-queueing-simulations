@@ -539,6 +539,9 @@ class App {
         System.out.println(YELLOW +
                 "Waiting time confidence interval (%): " + TEXT_RESET
                 + formatter.format(results.get("waitingTimeH")));
+        System.out.println(RED +
+                "Objective Functional: " + TEXT_RESET
+                + formatter.format(results.get("waitingTime") + results.get("totalCost")));
         // system time stats
         System.out.println(BLUE + "Total system time average per executions (Y) (min): " + TEXT_RESET
                 + formatter.format(results.get("systemTime") / 60)
