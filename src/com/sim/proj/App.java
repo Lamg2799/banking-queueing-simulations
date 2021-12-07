@@ -41,7 +41,7 @@ class App {
     /**
      * Output formatter
      */
-    private NumberFormat formatter = new DecimalFormat("#0.00");
+    public static NumberFormat formatter = new DecimalFormat("#0.00");
     /**
      * multiserver simulation instance
      */
@@ -106,7 +106,7 @@ class App {
     /**
      * Constant for max number of execution (Replications)
      */
-    private final int MAX_LOOP = 500;
+    private final int MAX_LOOP = 50;
     /**
      * Constant for number of server to start trial with
      */
@@ -348,7 +348,7 @@ class App {
             if (cost > 0) {
                 System.out.println(GREEN + "The optimal trial with a mean divider of " + TEXT_RESET + MEAN_DIVIDER
                         + GREEN + " is: ");
-                        System.out.println(trial.substring(55, 127)
+                System.out.println(trial.substring(55, 127)
                         + GREEN + "experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
                         + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }
@@ -511,12 +511,16 @@ class App {
 
         // Displaying result
         System.out.println(name);
-        System.out.println(BLUE + "Customers arrived = " + TEXT_RESET + Math.round(results.get("custArrived")));
+        System.out.println(BLUE + "Customers arrived average per executions = " + TEXT_RESET
+                + formatter.format(results.get("custArrived")));
 
         System.out.println(BLUE +
-                "Customers served = " + TEXT_RESET + Math.round(results.get("custServed")) + BLUE
-                + " Customers served % " + TEXT_RESET + formatter
-                        .format(100 * Math.round(results.get("custServed")) / Math.round(results.get("custArrived"))));
+                "Customers served average per executions = " + TEXT_RESET
+                + formatter.format(results.get("custServed")));
+        System.out.println(BLUE
+                + "Customers served ratio average per executions = " + TEXT_RESET + formatter
+                        .format(100 * results.get("custServed") / results.get("custArrived"))
+                + BLUE + " %");
         System.out.println(BLUE + "Mean divider = " + TEXT_RESET + results.get("meanDivider"));
         System.out.println(BLUE + "Total cost of server = " + TEXT_RESET + formatter.format(results.get("totalCost"))
                 + " $ per day");
