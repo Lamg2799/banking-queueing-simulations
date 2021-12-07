@@ -155,8 +155,8 @@ class App {
         var args = new String[13];
         // check if arguments are received or else use default values
         if (arguments != null && arguments.length == 4) {
-            MAX_QUEUE_SIZE = Integer.parseInt(arguments[0]);
-            MEAN_DIVIDER = Integer.parseInt(arguments[1]);
+            MEAN_DIVIDER = Integer.parseInt(arguments[0]);
+            MAX_QUEUE_SIZE = Integer.parseInt(arguments[1]);
             NUM_SERVERS_TO_TEST = Integer.parseInt(arguments[2]);
             resultLevel = Integer.parseInt(arguments[3]); // 0 to 5.
         }

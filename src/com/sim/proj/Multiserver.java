@@ -388,7 +388,7 @@ public class Multiserver {
             sort();
 
         } else {
-            
+
             // System.out.println("Processing arrival customer id " + c.getId() + " at " +
             // clock + " enqueued");
             // add to waiting line
@@ -404,7 +404,9 @@ public class Multiserver {
 
         var prob = Math.pow(s, 2) * 0.015 - 0.5 * s + 3;
         var rg = rdm.nextInt(100);
-
+        if (prob > 0) {
+            prob = 0;
+        }
         if (rg < prob) {
             return true;
         }
@@ -627,11 +629,11 @@ public class Multiserver {
         ret[8] = (Z * Math.sqrt(ret[1])) / Math.sqrt(maxloop);
         ret[9] = (Z * Math.sqrt(ret[5])) / Math.sqrt(maxloop);
 
-        if (ret[8] > 100){
+        if (ret[8] > 100) {
             ret[8] = 100;
         }
 
-        if (ret[9] > 100){
+        if (ret[9] > 100) {
             ret[9] = 100;
         }
 
