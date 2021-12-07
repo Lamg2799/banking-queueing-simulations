@@ -388,6 +388,7 @@ public class Multiserver {
             sort();
 
         } else {
+            
             // System.out.println("Processing arrival customer id " + c.getId() + " at " +
             // clock + " enqueued");
             // add to waiting line
