@@ -9,7 +9,7 @@ libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 
 #arguments
 meanDivider=1
-maxQueueSize=2
+maxQueueSize=6
 maxTrial=6
 resultLevel=1
 

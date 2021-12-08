@@ -415,12 +415,21 @@ public class Multiqueue {
         }
     }
 
+    /**
+     * compute the probablity of a customer turning away based on waiting line size
+     * the probabily start at 0, will start growing fallowing this equation:
+     * 0.015x^2 -0.5x + 3 ( x = waiting line size)
+     * The probability of customers turning away will reach 100% at a size around
+     * 100
+     * 
+     * @return if a customer is turning away
+     */
     private boolean isCustomerTurning(CustomerQueue shortestQueue) {
         var s = (double) shortestQueue.numCustomers();
 
         var prob = Math.pow(s, 2) * 0.015 - 0.5 * s + 3;
-        if(prob<0){
-            prob=0;
+        if (prob < 0) {
+            prob = 0;
         }
         var rg = rdm.nextInt(100);
 
@@ -652,11 +661,11 @@ public class Multiqueue {
         ret[8] = (Z * Math.sqrt(ret[1])) / Math.sqrt(maxloop);
         ret[9] = (Z * Math.sqrt(ret[5])) / Math.sqrt(maxloop);
 
-        if (ret[8] > 100){
+        if (ret[8] > 100) {
             ret[8] = 100;
         }
 
-        if (ret[9] > 100){
+        if (ret[9] > 100) {
             ret[9] = 100;
         }
 

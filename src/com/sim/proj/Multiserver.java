@@ -400,6 +400,15 @@ public class Multiserver {
 
     }
 
+    /**
+     * compute the probablity of a customer turning away based on waiting line size
+     * the probabily start at 0, will start growing fallowing this equation:
+     * 0.015x^2 -0.5x + 3 ( x = waiting line size)
+     * The probability of customers turning away will reach 100% at a size around
+     * 100
+     * 
+     * @return if a customer is turning away
+     */
     private boolean isCustomerTurning() {
         var s = (double) customersQ.numCustomers();
 

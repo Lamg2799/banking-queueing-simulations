@@ -100,7 +100,8 @@ class App {
      */
     final int DAILY_PAY_EXPERIENCED = 480;
     /**
-     * Constant for workday duration in seconds 8hr minus 3 min so the day ends at 8hr exactly
+     * Constant for workday duration in seconds 8hr minus 3 min so the day ends at
+     * 8hr exactly
      */
     private final double MAX_CLOCK = 28620;
     /**
@@ -182,6 +183,7 @@ class App {
                 args[4] = String.valueOf(experiencedServerNum); // # number of experienced server
 
                 args[11] = String.valueOf(trial++);
+
                 if (resultLevel < 5) {
                     if (resultLevel > 1) {
 
@@ -199,6 +201,21 @@ class App {
                 // run multiserver sim
                 multiServerResults.add(multiserver.runSim(args));
 
+                args[11] = String.valueOf(trial++);
+                if (resultLevel < 5) {
+                    if (resultLevel > 1) {
+
+                        System.out.println();
+                        System.out.println(GREEN + "Trial # " + TEXT_RESET + args[11]);
+
+                    } else {
+                        if (resultLevel > 0) {
+                            System.out.print(GREEN + "Trial # " + TEXT_RESET + args[11] + GREEN + "...");
+                        } else {
+                            System.out.print(GREEN + ".");
+                        }
+                    }
+                }
                 // run multiqueue sim
                 multiQueueResults.add(multiqueue.runSim(args));
 
@@ -253,17 +270,13 @@ class App {
         try {
             if (resultLevel > 0) {
                 printMultiServerResults();
-            }
-            if (resultLevel < 5) {
-                computeMultiserverOptimal();
-            }
-            if (resultLevel > 0) {
                 printMultiQueueResults();
             }
             if (resultLevel < 5) {
-
+                computeMultiserverOptimal();
                 computeMultiqueueOptimal();
             }
+
         } catch (Exception e) {
 
         }
