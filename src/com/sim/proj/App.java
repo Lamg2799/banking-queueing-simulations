@@ -100,13 +100,13 @@ class App {
      */
     final int DAILY_PAY_EXPERIENCED = 480;
     /**
-     * Constant for workday duration in seconds
+     * Constant for workday duration in seconds 8hr minus 3 min so the day ends at 8hr exactly
      */
-    private final double MAX_CLOCK = 28800;
+    private final double MAX_CLOCK = 28620;
     /**
      * Constant for max number of execution (Replications)
      */
-    private final int MAX_LOOP = 50;
+    private final int MAX_LOOP = 500;
     /**
      * Constant for number of server to start trial with
      */
