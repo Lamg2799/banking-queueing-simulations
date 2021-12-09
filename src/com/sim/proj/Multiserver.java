@@ -260,6 +260,7 @@ public class Multiserver {
         trial = Integer.parseInt(args[11]);
         resultLevel = Integer.parseInt(args[12]);
 
+        numCustomersArrived = 0;       
         numCustomersServed = 0;
         rdmS = new Random();
         numServer = numPrimary + numExperienced;
@@ -328,7 +329,7 @@ public class Multiserver {
      */
     private double generateNextIA(double time) {
 
-        // compute mean according to quadractic equation based on time of day
+        // compute mean according to equation based on time of day
         var mean = (Math.pow(time, 2) * 0.000003657) - (0.1262 * time) + 1200;
 
         var pd = new PoissonDistribution(mean / meanDivider);
@@ -403,7 +404,7 @@ public class Multiserver {
     /**
      * compute the probablity of a customer turning away based on waiting line size
      * the probabily start at 0, will start growing fallowing this equation:
-     * 0.015x^2 -0.5x + 3 ( x = waiting line size)
+     * 1.097^x -2 ( x = waiting line size)
      * The probability of customers turning away will reach 100% at a size around
      * 100
      * 
@@ -412,7 +413,7 @@ public class Multiserver {
     private boolean isCustomerTurning() {
         var s = (double) customersQ.numCustomers();
 
-        var prob = Math.pow(s, 2) * 0.015 - 0.5 * s + 3;
+        var prob = Math.pow(1.097, s) - 2;
         var rg = rdm.nextInt(100);
         if (prob < 0) {
             prob = 0;

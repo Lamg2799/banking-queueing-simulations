@@ -201,6 +201,12 @@ class App {
                 // run multiserver sim
                 multiServerResults.add(multiserver.runSim(args));
 
+                if (resultLevel < 2) {
+
+                    if (resultLevel > 0) {
+                        System.out.print(GREEN + "Done " + TEXT_RESET);
+                    }
+                }
                 args[11] = String.valueOf(trial++);
                 if (resultLevel < 5) {
                     if (resultLevel > 1) {
@@ -251,7 +257,27 @@ class App {
             }
             // run multiserver sim
             multiServerResults.add(multiserver.runSim(args));
+            if (resultLevel < 2) {
 
+                if (resultLevel > 0) {
+                    System.out.print(GREEN + "Done " + TEXT_RESET);
+                }
+            }
+            args[11] = String.valueOf(trial++);
+            if (resultLevel < 5) {
+                if (resultLevel > 1) {
+
+                    System.out.println();
+                    System.out.println(GREEN + "Trial # " + TEXT_RESET + args[11]);
+
+                } else {
+                    if (resultLevel > 0) {
+                        System.out.print(GREEN + "Trial # " + TEXT_RESET + args[11] + GREEN + "...");
+                    } else {
+                        System.out.print(GREEN + ".");
+                    }
+                }
+            }
             // run multiqueue sim
             multiQueueResults.add(multiqueue.runSim(args));
 
@@ -290,7 +316,7 @@ class App {
     private void computeMultiqueueOptimal() {
 
         // find lowest cost within restriction
-        System.out.println(GREEN + "Finding optimal result for multiqueue..." + TEXT_RESET);
+       
         System.out.println();
         double mincost = Double.MAX_VALUE;
 
@@ -316,10 +342,9 @@ class App {
 
             }
             if (cost > 0) {
-                System.out.println(GREEN + "The optimal trial with a mean divider of " + TEXT_RESET + MEAN_DIVIDER
-                        + GREEN + " is: ");
+                System.out.println(GREEN + "The optimal trial for multiqueue simulations is: ");
                 System.out.println(trial.substring(42, 114)
-                        + GREEN + "experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
+                        + GREEN + " experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
                         + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }
         }
@@ -333,7 +358,7 @@ class App {
     private void computeMultiserverOptimal() {
 
         // find lowest cost within restriction
-        System.out.println(GREEN + "Finding optimal result for singlequeue multiserver..." + TEXT_RESET);
+      
         System.out.println();
         double mincost = Double.MAX_VALUE;
 
@@ -359,10 +384,9 @@ class App {
 
             }
             if (cost > 0) {
-                System.out.println(GREEN + "The optimal trial with a mean divider of " + TEXT_RESET + MEAN_DIVIDER
-                        + GREEN + " is: ");
+                System.out.println(GREEN + "The optimal trial for singlequeue simulations is: ");
                 System.out.println(trial.substring(55, 127)
-                        + GREEN + "experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
+                        + GREEN + " experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
                         + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }
         }

@@ -417,8 +417,8 @@ public class Multiqueue {
 
     /**
      * compute the probablity of a customer turning away based on waiting line size
-     * the probabily start at 0, will start growing fallowing this equation:
-     * 0.015x^2 -0.5x + 3 ( x = waiting line size)
+     * the probabily start at 0, will start growing following this equation:
+     * 1.097^x -2 ( x = waiting line size)
      * The probability of customers turning away will reach 100% at a size around
      * 100
      * 
@@ -427,7 +427,7 @@ public class Multiqueue {
     private boolean isCustomerTurning(CustomerQueue shortestQueue) {
         var s = (double) shortestQueue.numCustomers();
 
-        var prob = Math.pow(s, 2) * 0.015 - 0.5 * s + 3;
+        var prob = Math.pow(1.097, s) - 2;
         if (prob < 0) {
             prob = 0;
         }

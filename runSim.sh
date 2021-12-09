@@ -9,8 +9,8 @@ libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 
 #arguments
 meanDivider=1
-maxQueueSize=6
-maxTrial=6
+maxQueueSize=5
+maxTrial=5
 resultLevel=1
 
 echo "Starting Multiserver"
