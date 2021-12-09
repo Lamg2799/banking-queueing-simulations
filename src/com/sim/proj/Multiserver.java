@@ -197,8 +197,11 @@ public class Multiserver {
 
             // loop through events in chronological order and process the right event type
             // stops when the workday is over ( 8hr)
-            while (clock < maxClock) {
+            var lastEventDeparture = false;
 
+            while (clock < maxClock || lastEventDeparture) {
+
+                lastEventDeparture = false;
                 // retrieve the next event
                 event = eventList.removeFirst();
                 // update the clock to current event
@@ -213,6 +216,12 @@ public class Multiserver {
                         processArrival();
                         break;
 
+                }
+
+                if (!eventList.isEmpty() && clock >= maxClock) {
+                    if (eventList.peekFirst().getType().equals(EventType.DEPARTURE)) {
+                        lastEventDeparture = true;
+                    }
                 }
             }
 
@@ -260,7 +269,7 @@ public class Multiserver {
         trial = Integer.parseInt(args[11]);
         resultLevel = Integer.parseInt(args[12]);
 
-        numCustomersArrived = 0;       
+        numCustomersArrived = 0;
         numCustomersServed = 0;
         rdmS = new Random();
         numServer = numPrimary + numExperienced;

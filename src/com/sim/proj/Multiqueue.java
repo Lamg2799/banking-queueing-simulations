@@ -198,8 +198,11 @@ public class Multiqueue {
 
             // loop through events in chronological order and process the right event type
             // stops when the workday is over ( 8hr)
-            while (clock < maxClock) {
+            var lastEventDeparture = false;
 
+            while (clock < maxClock || lastEventDeparture) {
+
+                lastEventDeparture = false;
                 // retrieve the next event
                 event = eventList.removeFirst();
                 // update the clock to current event
@@ -215,8 +218,13 @@ public class Multiqueue {
                         break;
 
                 }
-            }
 
+                if (!eventList.isEmpty() && clock >= maxClock) {
+                    if (eventList.peekFirst().getType().equals(EventType.DEPARTURE)) {
+                        lastEventDeparture = true;
+                    }
+                }
+            }
             // record stats for customers who did not get served during work day
             for (int i = 0; i < customerQueues.length; i++) {
                 while (!customerQueues[i].isEmpty()) {
