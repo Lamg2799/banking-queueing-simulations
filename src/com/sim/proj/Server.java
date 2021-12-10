@@ -1,5 +1,8 @@
 package com.sim.proj;
 
+/**
+ * Class Server to keep track of the multiple servers in simulations
+ */
 public class Server {
     /**
      * Static id to record last id
@@ -41,11 +44,13 @@ public class Server {
      */
     private double sigmaServiceTime = 80;
 
-    
-
-    /**
-     * Constructor
-     */
+   /**
+    * Constructor
+    * @param meanServiceTime avg service time for this server
+    * @param sigmaServiceTime avg service time sigma for this server
+    * @param dailyPay the server daily pay rate
+    * @param type the server type
+    */
     public Server(double meanServiceTime, double sigmaServiceTime, double dailyPay, ServerType type) {
 
         this.meanServiceTime = meanServiceTime;
@@ -68,7 +73,8 @@ public class Server {
     /**
      * Set the total time that the server has served customers
      * 
-     * @param serviceTime The time spent serving the current customer to add to the total
+     * @param serviceTime The time spent serving the current customer to add to the
+     *                    total
      */
     public void addToTotalServiceTime(double serviceTime) {
         this.totalTime += serviceTime;
@@ -127,8 +133,5 @@ public class Server {
     public double getTotalTime() {
         return this.totalTime;
     }
-    
-
-    
 
 }

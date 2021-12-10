@@ -45,9 +45,10 @@ public class Results {
      */
     private String name;
 
-    /**
-     * Constructor
-     */
+   /**
+    * Constructor for new execution results class
+    * @param name the execution parameters in a string to be displayd at results printing
+    */
     public Results(String name) {
         this.name = name;
         results = new HashMap<>();

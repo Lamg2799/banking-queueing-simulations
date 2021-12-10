@@ -5,7 +5,7 @@ import java.util.LinkedList;
 /**
  * Customer's waiting line when server is busy
  * 
- * @author Samuel Garneau, Oct 16, 2021, Ottawa, On
+ * @author CSI 4124 Group 4th, Ottawa, On
  * @version 1.0
  */
 class CustomerQueue {

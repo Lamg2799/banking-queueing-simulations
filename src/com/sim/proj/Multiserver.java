@@ -13,7 +13,7 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
  * Multi server implementaion as a part of our project for CSI4124 Simulation
  * and modelisation Created by:
  * 
- * @author Samuel Garneau, nov 19th, 2021, Ottawa, On
+ * @author CSI 4124 Group 4th
  * @version 1.0
  */
 public class Multiserver {

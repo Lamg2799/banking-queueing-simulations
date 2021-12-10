@@ -14,7 +14,7 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
  * Simulation
  * and modelisation Created by:
  * 
- * @author
+ * @author CSI 4124 Group 4th
  * @version 1.0
  */
 public class Multiqueue {
@@ -439,6 +439,7 @@ public class Multiqueue {
      * The probability of customers turning away will reach 100% at a size around
      * 100
      * 
+     * @param shortestQueue the queue that the customer will pick
      * @return if a customer is turning away
      */
     private boolean isCustomerTurning(CustomerQueue shortestQueue) {

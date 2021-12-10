@@ -8,12 +8,7 @@ import java.util.HashMap;
 /**
  * Main class for Bank Queuing Simulation with New Realities project
  * University of Ottawa CSI 4124 group 4 fall 2021.
- * Group Members and Student IDs:
- * Samuel Garneau (2380248)
- * Chengen Lyu (300028734)
- * Jahesh Davodra (300018359)
- * Le Nguyen (300013304)
- * Luke Germond (300014113)
+ * @author * Group Members and Student IDs: * Samuel Garneau (2380248) * Jahesh Davodra (300018359) * Le Nguyen (300013304) * Luke Germond (300014113)
  * 
  */
 class App {
@@ -428,7 +423,7 @@ class App {
     /**
      * to print random generated values
      * 
-     * @param rst
+     * @param rst results object instance to print
      */
     private void printRandomValues(Results rst) {
 
@@ -453,7 +448,7 @@ class App {
     /**
      * to print average per executions
      * 
-     * @param rst
+     * @param rst results object instance to print
      */
     private void printAvgPerExecutions(Results rst) {
 
@@ -536,10 +531,11 @@ class App {
         System.out.println();
     }
 
+
     /**
-     * Computes, saves and displays the results obtained from the simulations
      * 
-     * @param results the hashmap to print
+     * @param results  the hashmap to print
+     * @param name the string parameter to display at print out
      */
     private void printReport(HashMap<String, Double> results, String name) {
 
