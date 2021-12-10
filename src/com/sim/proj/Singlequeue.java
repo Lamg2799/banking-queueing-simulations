@@ -16,7 +16,7 @@ import org.apache.commons.math3.distribution.PoissonDistribution;
  * @author CSI 4124 Group 4th
  * @version 1.0
  */
-public class Multiserver {
+public class Singlequeue {
 
     /**
      * List of customers to go through simulation
@@ -185,7 +185,7 @@ public class Multiserver {
             System.out.println();
             System.out.print(
                     App.GREEN + "Running " + App.TEXT_RESET + numMaxLoop + App.GREEN
-                            + " singlequeue multiserver simulations with "
+                            + " singlequeue  simulations with "
                             + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]
                             + App.GREEN + " experienced servers... ");
         }
@@ -277,7 +277,7 @@ public class Multiserver {
         for (int i = numPrimary; i < (numPrimary + numExperienced); i++) {
             servers[i] = new Server(meanExperiencedS, sigmaExperiencedS, dailyPayExperienced, ServerType.EXPERIENCED);
         }
-        var name = App.GREEN + "Results for singlequeue multiserver simulations trial # " + App.TEXT_RESET + trial
+        var name = App.GREEN + "Results for singlequeue  simulations trial # " + App.TEXT_RESET + trial
                 + App.GREEN
                 + " with "
                 + App.TEXT_RESET + args[3] + App.GREEN + " primary servers and " + App.TEXT_RESET + args[4]

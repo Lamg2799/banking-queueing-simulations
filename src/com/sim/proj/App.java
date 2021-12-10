@@ -38,17 +38,17 @@ class App {
      */
     public static NumberFormat formatter = new DecimalFormat("#0.00");
     /**
-     * multiserver simulation instance
+     * singlequeue simulation instance
      */
-    private Multiserver multiserver = null;
+    private Singlequeue singlequeue = null;
     /**
      * multiqueue simulation instance
      */
     private Multiqueue multiqueue = null;
     /**
-     * List to store the multiserver simulation results at each execution
+     * List to store the singlequeue simulation results at each execution
      */
-    private ArrayList<Results> multiServerResults;
+    private ArrayList<Results> singleQueueResults;
     /**
      * List to store the multiqueue simulation results at each execution
      */
@@ -135,7 +135,7 @@ class App {
     private App(String[] args) {
         arguments = args;
         multiQueueResults = new ArrayList<Results>();
-        multiServerResults = new ArrayList<Results>();
+        singleQueueResults = new ArrayList<Results>();
         // run simulations
         runSims();
 
@@ -172,7 +172,7 @@ class App {
                 + SERVER_START_NUM; primaryServerNum++) {
             for (int experiencedServerNum = 0; experiencedServerNum < NUM_SERVERS_TO_TEST
                     + SERVER_START_NUM; experiencedServerNum++) {
-                multiserver = new Multiserver();
+                singlequeue = new Singlequeue();
                 multiqueue = new Multiqueue();
                 System.gc();
                 args[3] = String.valueOf(primaryServerNum); // # number of primary server
@@ -194,8 +194,8 @@ class App {
                         }
                     }
                 }
-                // run multiserver sim
-                multiServerResults.add(multiserver.runSim(args));
+                // run singlequeue sim
+                singleQueueResults.add(singlequeue.runSim(args));
 
                 if (resultLevel < 2) {
 
@@ -231,7 +231,7 @@ class App {
         }
         // TESTS WITH ONLY EXPERIENCED SERVERS
         for (int serverNum = SERVER_START_NUM; serverNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; serverNum++) {
-            multiserver = new Multiserver();
+            singlequeue = new Singlequeue();
             multiqueue = new Multiqueue();
             System.gc();
             args[3] = "0"; // # number of primary servers
@@ -252,8 +252,8 @@ class App {
                     }
                 }
             }
-            // run multiserver sim
-            multiServerResults.add(multiserver.runSim(args));
+            // run singlequeue sim
+            singleQueueResults.add(singlequeue.runSim(args));
             if (resultLevel < 2) {
 
                 if (resultLevel > 0) {
@@ -292,11 +292,11 @@ class App {
         // finding optimal parameters based on MAX_QUEUE_SIZE
         try {
             if (resultLevel > 0) {
-                printMultiServerResults();
+                printSingleQueueResults();
                 printMultiQueueResults();
             }
             if (resultLevel < 5) {
-                computeMultiserverOptimal();
+                computeSinglequeueOptimal();
                 computeMultiqueueOptimal();
             }
 
@@ -352,7 +352,7 @@ class App {
      * Find the optimal number of server based on max customer waiting in line
      * parameter
      */
-    private void computeMultiserverOptimal() {
+    private void computeSinglequeueOptimal() {
 
         // find lowest cost within restriction
       
@@ -361,8 +361,8 @@ class App {
 
         double cost = 0;
         var trial = "";
-        if (multiServerResults.size() > 0) {
-            for (Results rst : multiServerResults) {
+        if (singleQueueResults.size() > 0) {
+            for (Results rst : singleQueueResults) {
                 // retrieve result hashmap
                 var r = rst.getResults();
                 var cc = r.get("costPerCustomer");
@@ -393,10 +393,10 @@ class App {
     /**
      * loops through all the results and call print function
      */
-    private void printMultiServerResults() {
+    private void printSingleQueueResults() {
 
-        if (multiServerResults.size() > 0) {
-            for (Results rst : multiServerResults) {
+        if (singleQueueResults.size() > 0) {
+            for (Results rst : singleQueueResults) {
 
                 System.out.println();
                 if (resultLevel == 5) {
