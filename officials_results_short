@@ -1,0 +1,53 @@
+# CSI4124 Groutp 4th Short results file 
+# to display this file correctly with colors open a bash terminal window (Git bash) in the current folder and
+# run $ less -R ./results_short 
+# (to display detailed results run $ less -R ./results_outputs_detailed )
+
+
+[0;32mThe optimal trial for singlequeue simulations is: 
+trial # [0m3[0;32m with [0m1[0;32m primary servers and [0m1[0;32m [0;32m experienced servers with a total cost of [0m736.00[0;32m $ and a cost per customer of [0m6.29 $
+
+
+[0;32mThe optimal trial for multiqueue simulations is: 
+trial # [0m14[0;32m with [0m2[0;32m primary servers and [0m0[0;32m[0;32m experienced servers with a total cost of [0m512.00[0;32m $ and a cost per customer of [0m4.37 $
+
+
+
+[0;32mResults for singlequeue multiserver simulations trial # [0m3[0;32m with [0m1[0;32m primary servers and [0m1[0;32m experienced servers... 
+[0;34mCustomers arrived average per executions = [0m117.10
+[0;34mCustomers served average per executions = [0m117.10
+[0;34mCustomers served ratio average per executions = [0m100.00[0;34m %
+[0;34mMean divider = [0m1.0
+[0;34mTotal cost of server = [0m736.00 $ per day
+[0;34mTotal cost of server per customer served= [0m6.29 $ per customer served
+[0;34mNum loop done: [0m500
+[0;34mFinal clock (min): [0m484.87
+[0;34mTotal waiting time average per executions (Y) (min): [0m7.85[0;34m; Total waiting time average variance per executions (S^2) : [0m57.66[0;34m; average per executions per customers (Y) (min): [0m0.07[0;34m; average variance per executions per customers (S^2) : [0m0.49[0;34m; Max waiting time (min): [0m7.60
+[0;33mWaiting time confidence interval (%): [0m39.93
+[0;31mObjective Functional: [0m1206.82
+[0;34mTotal system time average per executions (Y) (min): [0m308.89[0;34m; Total system time average variance per executions (S^2): [0m543.61[0;34m; average per executions per customers (Y) (min): [0m2.64[0;34m; average variance per executions per customers (S^2) : [0m4.64
+[0;33mSystem time confidence interval (%): [0m100.00
+[0;34mTotal time Server #: [0m0[0;34m was Busy (min): [0m229.67[0;34m; (%):  [0m47.37
+[0;34mTotal time Server #: [0m1[0;34m was Busy (min): [0m71.38[0;34m; (%):  [0m14.72
+[0;34mMax customers waiting in line: [0m5
+
+
+[0;32mResults for multiqueue simulations trial # [0m14[0;32m with [0m2[0;32m primary servers and [0m0[0;32m experienced servers... 
+[0;34mCustomers arrived average per executions = [0m117.07
+[0;34mCustomers served average per executions = [0m117.07
+[0;34mCustomers served ratio average per executions = [0m100.00[0;34m %
+[0;34mMean divider = [0m1.0
+[0;34mTotal cost of server = [0m512.00 $ per day
+[0;34mTotal cost of server per customer served= [0m4.37 $ per customer served
+[0;34mNum loop done: [0m500
+[0;34mFinal clock (min): [0m485.13
+[0;34mTotal waiting time average per executions (Y) (min): [0m40.69[0;34m; Total waiting time average variance per executions (S^2) : [0m900.12[0;34m; average per executions per customers (Y) (min): [0m0.35[0;34m; average variance per executions per customers (S^2) : [0m7.69[0;34m; Max waiting time (min): [0m18.01
+[0;33mWaiting time confidence interval (%): [0m100.00
+[0;31mObjective Functional: [0m2953.42
+[0;34mTotal system time average per executions (Y) (min): [0m376.64[0;34m; Total system time average variance per executions (S^2): [0m2315.60[0;34m; average per executions per customers (Y) (min): [0m3.22[0;34m; average variance per executions per customers (S^2) : [0m19.78
+[0;33mSystem time confidence interval (%): [0m100.00
+[0;34mTotal time Server #: [0m0[0;34m was Busy (min): [0m237.77[0;34m; (%):  [0m49.01
+[0;34mTotal time Server #: [0m1[0;34m was Busy (min): [0m98.18[0;34m; (%):  [0m20.24
+[0;34mMax customers waiting in line: [0m4
+
+
