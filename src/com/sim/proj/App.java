@@ -100,14 +100,14 @@ class App {
      */
     final int DAILY_PAY_EXPERIENCED = 480;
     /**
-     * Constant for workday duration in seconds 8hr minus 3 min so the day ends at
+     * Constant for workday duration in seconds 8hr so the day ends at
      * 8hr exactly
      */
-    private final double MAX_CLOCK = 28620;
+    private final double MAX_CLOCK = 28800;
     /**
      * Constant for max number of execution (Replications)
      */
-    private final int MAX_LOOP = 50;
+    private final int MAX_LOOP = 500;
     /**
      * Constant for number of server to start trial with
      */
@@ -179,6 +179,7 @@ class App {
                     + SERVER_START_NUM; experiencedServerNum++) {
                 multiserver = new Multiserver();
                 multiqueue = new Multiqueue();
+                System.gc();
                 args[3] = String.valueOf(primaryServerNum); // # number of primary server
                 args[4] = String.valueOf(experiencedServerNum); // # number of experienced server
 
@@ -237,6 +238,7 @@ class App {
         for (int serverNum = SERVER_START_NUM; serverNum < NUM_SERVERS_TO_TEST + SERVER_START_NUM; serverNum++) {
             multiserver = new Multiserver();
             multiqueue = new Multiqueue();
+            System.gc();
             args[3] = "0"; // # number of primary servers
             args[4] = String.valueOf(serverNum);
             ; // number of experienced servers

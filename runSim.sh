@@ -4,13 +4,13 @@
 localPath="/home/sam/Documents/UOttawa_21-22/Live_code/Java_Projects/multiserver"
 srcPath="/com/sim/proj"
 mainClass="com.sim.proj.App"
-jarName="multiserver.jar"
+jarName="CSI4124_group-4th.jar"
 libSrcPath="/lib/commons-math3-3.6.1-sources.jar"
 
 #arguments
 meanDivider=1
 maxQueueSize=5
-maxTrial=5
+maxTrial=1
 resultLevel=1
 
 echo "Starting Multiserver"
@@ -33,7 +33,12 @@ if ((resultLevel > 4)); then
 fi
 cd "$localPath"/bin && java "$mainClass" $meanDivider $maxQueueSize $maxTrial $resultLevel >"$file"
 echo
-echo "Simulation completed"
+timeend=$(date +"%T")
+echo "Simulation completed $timeend"
+ difference=$(( $(date -d "$timeend" "+%s") - $(date -d "$time" "+%s") ))
+
+echo "Execution time = $difference seconds"
+
 echo
 echo "Displaying output from results_$time"
 echo

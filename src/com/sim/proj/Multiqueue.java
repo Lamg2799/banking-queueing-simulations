@@ -198,11 +198,9 @@ public class Multiqueue {
 
             // loop through events in chronological order and process the right event type
             // stops when the workday is over ( 8hr)
-            var lastEventDeparture = false;
+            // must keep processing events untill all departure are processed
+            while (clock < maxClock || !eventList.isEmpty()) {
 
-            while (clock < maxClock || lastEventDeparture) {
-
-                lastEventDeparture = false;
                 // retrieve the next event
                 event = eventList.removeFirst();
                 // update the clock to current event
@@ -214,16 +212,14 @@ public class Multiqueue {
                         processDeparture();
                         break;
                     case ARRIVAL:
-                        processArrival();
+                        // Stop letting people in 3 min before the end of workday
+                        if (clock < maxClock - 180) {
+                            processArrival();
+                        }
                         break;
 
                 }
 
-                if (!eventList.isEmpty() && clock >= maxClock) {
-                    if (eventList.peekFirst().getType().equals(EventType.DEPARTURE)) {
-                        lastEventDeparture = true;
-                    }
-                }
             }
             // record stats for customers who did not get served during work day
             for (int i = 0; i < customerQueues.length; i++) {
@@ -303,7 +299,7 @@ public class Multiqueue {
         eventList = new LinkedList<Event>();
         customers = new ArrayList<Customer>();
         randomValues = new LinkedList<>();
-
+        System.gc();
         for (int i = 0; i < servers.length; i++) {
             servers[i].setStatus(Status.IDLE);
         }
@@ -412,15 +408,28 @@ public class Multiqueue {
             currentServer.setStatus(Status.BUSY);
             c.setServerIndex(index);
             // schedule departure event
-            double nextS = Math.abs(
-                    rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
-            // compile server busy time
-            currentServer.addToTotalServiceTime(nextS);
-            // add departure event
-            eventList.add(new Event(EventType.DEPARTURE, nextS + event.getTime(), c));
-            sort();
+            scheduleDeparture(currentServer, event.getTime(), event.getCustomer());
 
         }
+    }
+
+    /**
+     * Schedule a new departure event in the event list
+     * 
+     * @param currentServer the server where the customer is being served
+     * @param time          the time of the departure
+     * @param customer      the customer being served
+     */
+    private void scheduleDeparture(Server currentServer, double time, Customer customer) {
+
+        double nextS = Math.abs(
+                rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
+        // compile server busy time
+        currentServer.addToTotalServiceTime(nextS);
+        // add departure event
+        eventList.add(new Event(EventType.DEPARTURE, nextS + time, customer));
+        sort();
+
     }
 
     /**
@@ -483,12 +492,7 @@ public class Multiqueue {
             }
 
             // schedule departure event
-
-            double nextS = Math.abs(
-                    rdmS.nextGaussian() * currentServer.getMeanServiceTime() + currentServer.getSigmaServiceTime());
-            currentServer.addToTotalServiceTime(nextS);
-            eventList.add(new Event(EventType.DEPARTURE, nextS + clock, c));
-            sort();
+            scheduleDeparture(currentServer, clock, c);
 
         }
 
