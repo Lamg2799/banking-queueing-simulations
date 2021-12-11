@@ -382,7 +382,7 @@ class App {
             }
             if (cost > 0) {
                 System.out.println(GREEN + "The optimal trial for singlequeue simulations is: ");
-                System.out.println(trial.substring(55, 127)
+                System.out.println(trial.substring(44, 127)
                         + GREEN + " experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
                         + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
             }

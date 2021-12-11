@@ -212,8 +212,12 @@ public class Multiqueue {
                         processDeparture();
                         break;
                     case ARRIVAL:
-                        // Stop letting people in 3 min before the end of workday
-                        if (clock < maxClock - 180) {
+                        // Stop letting people in at least 3 min before the end of workday. But will add
+                        // 3 min for each person waiting in line
+                        // to ensure that all customers already in the ststem are getting served within
+                        // the 8 hours workday
+                        if (clock < maxClock
+                                - (180.0 * (1 + (double) getShortestQueue(customerQueues).numCustomers()))) {
                             processArrival();
                         }
                         break;
