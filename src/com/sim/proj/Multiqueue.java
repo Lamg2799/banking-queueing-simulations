@@ -217,7 +217,7 @@ public class Multiqueue {
                         // to ensure that all customers already in the ststem are getting served within
                         // the 8 hours workday
                         if (clock < maxClock
-                                - (180.0 * (1 + (double) getShortestQueue(customerQueues).numCustomers()))) {
+                                - (180.0 * (1.0 + (double) getShortestQueue(customerQueues).numCustomers()))) {
                             processArrival();
                         }
                         break;
