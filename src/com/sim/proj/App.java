@@ -8,7 +8,10 @@ import java.util.HashMap;
 /**
  * Main class for Bank Queuing Simulation with New Realities project
  * University of Ottawa CSI 4124 group 4 fall 2021.
- * @author * Group Members and Student IDs: * Samuel Garneau (2380248) * Jahesh Davodra (300018359) * Le Nguyen (300013304) * Luke Germond (300014113)
+ * 
+ * @author * Group Members and Student IDs: * Samuel Garneau (2380248) * Jahesh
+ *         Davodra (300018359) * Le Nguyen (300013304) * Luke Germond
+ *         (300014113)
  * 
  */
 class App {
@@ -313,9 +316,9 @@ class App {
     private void computeMultiqueueOptimal() {
 
         // find lowest cost within restriction
-       
+
         System.out.println();
-        double mincost = Double.MAX_VALUE;
+        double minobj = Double.MAX_VALUE;
 
         double cost = 0;
         var trial = "";
@@ -323,15 +326,15 @@ class App {
             for (Results rst : multiQueueResults) {
                 // retrieve result hashmap
                 var r = rst.getResults();
-                var cc = r.get("costPerCustomer");
+                var cc = r.get("waitingTime") + r.get("totalCost");
                 var qsize = r.get("maxQueue");
-                if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
-                    mincost = cc;
+                if (cc < minobj && qsize <= MAX_QUEUE_SIZE) {
+                    minobj = cc;
 
                     cost = r.get("totalCost");
                     trial = rst.getName();
                 } else if (MAX_QUEUE_SIZE < 0) {
-                    mincost = cc;
+                    minobj = cc;
 
                     cost = r.get("totalCost");
                     trial = rst.getName();
@@ -342,7 +345,7 @@ class App {
                 System.out.println(GREEN + "The optimal trial for multiqueue simulations is: ");
                 System.out.println(trial.substring(42, 114)
                         + GREEN + " experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
-                        + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
+                        + GREEN + " $ and objective functional of " + TEXT_RESET + formatter.format(minobj) + " $");
             }
         }
         System.out.println();
@@ -355,9 +358,9 @@ class App {
     private void computeSinglequeueOptimal() {
 
         // find lowest cost within restriction
-      
+
         System.out.println();
-        double mincost = Double.MAX_VALUE;
+        double minobj = Double.MAX_VALUE;
 
         double cost = 0;
         var trial = "";
@@ -365,15 +368,15 @@ class App {
             for (Results rst : singleQueueResults) {
                 // retrieve result hashmap
                 var r = rst.getResults();
-                var cc = r.get("costPerCustomer");
+                var cc = r.get("waitingTime") + r.get("totalCost");
                 var qsize = r.get("maxQueue");
-                if (cc < mincost && qsize <= MAX_QUEUE_SIZE) {
-                    mincost = cc;
+                if (cc < minobj && qsize <= MAX_QUEUE_SIZE) {
+                    minobj = cc;
 
                     cost = r.get("totalCost");
                     trial = rst.getName();
                 } else if (MAX_QUEUE_SIZE < 0) {
-                    mincost = cc;
+                    minobj = cc;
 
                     cost = r.get("totalCost");
                     trial = rst.getName();
@@ -384,7 +387,7 @@ class App {
                 System.out.println(GREEN + "The optimal trial for singlequeue simulations is: ");
                 System.out.println(trial.substring(44, 127)
                         + GREEN + " experienced servers with a total cost of " + TEXT_RESET + formatter.format(cost)
-                        + GREEN + " $ and a cost per customer of " + TEXT_RESET + formatter.format(mincost) + " $");
+                        + GREEN + " $ and objective functional of " + TEXT_RESET + formatter.format(minobj) + " $");
             }
         }
         System.out.println();
@@ -531,11 +534,10 @@ class App {
         System.out.println();
     }
 
-
     /**
      * 
-     * @param results  the hashmap to print
-     * @param name the string parameter to display at print out
+     * @param results the hashmap to print
+     * @param name    the string parameter to display at print out
      */
     private void printReport(HashMap<String, Double> results, String name) {
 

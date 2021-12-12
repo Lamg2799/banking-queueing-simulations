@@ -1,0 +1,54 @@
+# CSI4124 Groutp 4th Short results file 
+# to display this file correctly with colors open a bash terminal window (Git bash) in the current folder and
+# run $ less -R ./final_results_short 
+# (to display detailed results run $ less -R ./final_results_detailed )
+
+[0;32mResults for singlequeue  simulations trial # [0m25[0;32m with [0m3[0;32m primary servers and [0m0[0;32m experienced servers... 
+[0;34mCustomers arrived average per executions = [0m117.14
+[0;34mCustomers served average per executions = [0m117.14
+[0;34mCustomers served ratio average per executions = [0m100.00[0;34m %
+[0;34mMean divider = [0m1.0
+[0;34mTotal cost of server = [0m768.00 $ per day
+[0;34mTotal cost of server per customer served= [0m6.56 $ per customer served
+[0;34mNum loop done: [0m500
+[0;34mFinal clock (min): [0m485.01
+[0;34mTotal waiting time average per executions (Y) (min): [0m0.86[0;34m; Total waiting time average variance per executions (S^2) : [0m2.25[0;34m; average per executions per customers (Y) (min): [0m0.01[0;34m; average variance per executions per customers (S^2) : [0m0.02[0;34m; Max waiting time (min): [0m3.77
+[0;33mWaiting time confidence interval (%): [0m7.89
+[0;31mObjective Functional: [0m819.86
+[0;34mTotal system time average per executions (Y) (min): [0m336.60[0;34m; Total system time average variance per executions (S^2): [0m572.21[0;34m; average per executions per customers (Y) (min): [0m2.87[0;34m; average variance per executions per customers (S^2) : [0m4.88
+[0;33mSystem time confidence interval (%): [0m100.00
+[0;34mTotal time Server #: [0m0[0;34m was Busy (min): [0m156.43[0;34m; (%):  [0m32.25
+[0;34mTotal time Server #: [0m1[0;34m was Busy (min): [0m155.65[0;34m; (%):  [0m32.09
+[0;34mTotal time Server #: [0m2[0;34m was Busy (min): [0m23.65[0;34m; (%):  [0m4.88
+[0;34mMax customers waiting in line: [0m2
+
+
+[0;32mResults for multiqueue simulations trial # [0m26[0;32m with [0m3[0;32m primary servers and [0m0[0;32m experienced servers... 
+[0;34mCustomers arrived average per executions = [0m117.07
+[0;34mCustomers served average per executions = [0m117.07
+[0;34mCustomers served ratio average per executions = [0m100.00[0;34m %
+[0;34mMean divider = [0m1.0
+[0;34mTotal cost of server = [0m768.00 $ per day
+[0;34mTotal cost of server per customer served= [0m6.56 $ per customer served
+[0;34mNum loop done: [0m500
+[0;34mFinal clock (min): [0m484.97
+[0;34mTotal waiting time average per executions (Y) (min): [0m2.07[0;34m; Total waiting time average variance per executions (S^2) : [0m10.62[0;34m; average per executions per customers (Y) (min): [0m0.02[0;34m; average variance per executions per customers (S^2) : [0m0.09[0;34m; Max waiting time (min): [0m9.24
+[0;33mWaiting time confidence interval (%): [0m17.14
+[0;31mObjective Functional: [0m892.16
+[0;34mTotal system time average per executions (Y) (min): [0m336.98[0;34m; Total system time average variance per executions (S^2): [0m643.97[0;34m; average per executions per customers (Y) (min): [0m2.88[0;34m; average variance per executions per customers (S^2) : [0m5.50
+[0;33mSystem time confidence interval (%): [0m100.00
+[0;34mTotal time Server #: [0m0[0;34m was Busy (min): [0m157.49[0;34m; (%):  [0m32.47
+[0;34mTotal time Server #: [0m1[0;34m was Busy (min): [0m154.48[0;34m; (%):  [0m31.85
+[0;34mTotal time Server #: [0m2[0;34m was Busy (min): [0m22.94[0;34m; (%):  [0m4.73
+[0;34mMax customers waiting in line: [0m1
+
+
+
+[0;32mThe optimal trial for singlequeue simulations is: 
+trial # [0m25[0;32m with [0m3[0;32m primary servers and [0m0[0;32m experience[0;32m experienced servers with a total cost of [0m768.00[0;32m $ and objective functional of [0m819.86 $
+
+
+[0;32mThe optimal trial for multiqueue simulations is: 
+trial # [0m26[0;32m with [0m3[0;32m primary servers and [0m0[0;32m[0;32m experienced servers with a total cost of [0m768.00[0;32m $ and objective functional of [0m892.16 $
+
+
