@@ -8,6 +8,16 @@ This was the modified proposal related to the paper:
 
 https://docs.google.com/document/d/1E5DGf7JqsUPbQBhVTSvf4Xihby42ri2d/edit?usp=sharing&ouid=101360817435021877092&rtpof=true&sd=true
 
+## Future Improvements
+
+I originally suggested to combine the single-queue and multi-queue classes together, but this was not feasible due to the size of the group and the deadline.
+
+Not manually install project dependencies into the project folder, and used some sort of versioning/package manager if possible.
+
+Better coding conventions.
+
+More test cases.
+
 ## Folder Structure
 
 The workspace contains two folders by default, where:
