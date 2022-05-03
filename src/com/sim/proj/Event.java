@@ -3,7 +3,7 @@ package com.sim.proj;
 /**
  * Class Event, entities to be proccessed in the simulations
  * 
- * @author Samuel Garneau, Oct 16, 2021, Ottawa, On
+ * @author CSI 4124 Group 4th, Ottawa, On
  * @version 1.0
  */
 class Event {

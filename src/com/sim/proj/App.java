@@ -6,12 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Main class for Bank Queuing Simulation with New Realities project
- * University of Ottawa CSI 4124 group 4 fall 2021.
  * 
- * @author * Group Members and Student IDs: * Samuel Garneau (2380248) * Jahesh
- *         Davodra (300018359) * Le Nguyen (300013304) * Luke Germond
- *         (300014113)
+ * @author CSI 4124 Group 4th, Ottawa, On
  * 
  */
 class App {
@@ -122,7 +118,8 @@ class App {
     /**
      * Main static function for project start
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;
+     * [6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
      */
     public static void main(String[] args) {
 
@@ -133,7 +130,8 @@ class App {
     /**
      * Constructor
      * 
-     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;[7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
+     * @param args args[0]=numMaxLoop;[1]=maxClock;[2]=MEAN_DIVIDER;[3]=numPrimary;[4]=numExperienced;[5]=meanPrimaryS;[6]=sigmaPrimaryS;
+     * [7]=meanExperiecedS;[8]=sigmaExperiencedS;[9]=dailyPayPrimary;[10]=dailyPayExperienced;
      */
     private App(String[] args) {
         arguments = args;

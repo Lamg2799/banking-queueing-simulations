@@ -51,8 +51,6 @@ public class Customer {
 
     }
 
-    // setters
-
     /**
      * To compute the waiting time based on the current clock when a customer leaves
      * the waiting line
@@ -104,7 +102,6 @@ public class Customer {
         interArrivalValues = ia;
     }
 
-    // getters
     /**
      * Get inter arrival value for this event
      * 
@@ -148,27 +145,6 @@ public class Customer {
      */
     public double getTotalSystemTime() {
         return totalSystemTime;
-    }
-
-    @Override
-   /**
-    * @return customer string
-    */
-    public String toString() {
-        /*
-         * totalSystemTime = totalSystemTimeMultiple / numCurrentLoop; waitingTime =
-         * waitingTimeMultiple / numCurrentLoop; NumberFormat formatter = new
-         * DecimalFormat("#0.00"); String s = "";
-         * 
-         * s += "Customer id: " + id;
-         * 
-         * s += "; Served by server #: " + serverIndex;
-         * 
-         * s += "\nWaiting time: " + formatter.format(waitingTime) + " sec";
-         * 
-         * s += "; Total System time: " + formatter.format(totalSystemTime) + " sec";
-         */
-        return "Customer.toString() needs to be reimplemented";
     }
 
 }

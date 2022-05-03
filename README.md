@@ -1,7 +1,11 @@
 ## Getting Started
 
-Welcome to the CSI-4124 group 4 simulation project based on the following proposal:
-https://docs.google.com/document/d/14V51ohddjVlnsND_AvSgljh5nh724K56AJ-VW-dpAv0/edit?usp=sharing
+Welcome to the CSI-4124 group 4 simulation project based on the following paper:
+https://drive.google.com/file/d/1SyjSH26zRqFLq5I-80k-yM5Fw2I7KHQv/view?usp=sharing
+
+This was the modified proposal related to the paper:
+
+https://docs.google.com/document/d/1E5DGf7JqsUPbQBhVTSvf4Xihby42ri2d/edit?usp=sharing&ouid=101360817435021877092&rtpof=true&sd=true
 
 ## Folder Structure
 
